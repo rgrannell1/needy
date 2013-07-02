@@ -14,6 +14,6 @@ Suggests:
     testthat
 License: MIT
 Collate:
-    'require_a.R'
+    'needs_a.R'
  	'tools.R'
  	'trait_tests.R'

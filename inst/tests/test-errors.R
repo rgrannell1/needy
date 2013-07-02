@@ -20,7 +20,6 @@ context("errors: positive controls")
 		expect_error(
 			require_a( 1, 1 ),
 			'character vector')
-
 	})
 
 	test_that("errors are thrown for invalid traits", {
@@ -29,7 +28,6 @@ context("errors: positive controls")
 			require_a('ten-foot-elephant', 1),
 			'ten-foot-elephant'
 		)
-
 	})
 
 	test_that("errors are thrown when the object doesn't match its traits", {
