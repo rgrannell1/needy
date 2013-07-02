@@ -15,7 +15,7 @@ context("errors: positive controls")
 
 	})
 
-	test_that("errors are thrown if properties is the wrong class", {
+	test_that("errors are thrown if 'traits' is the wrong class", {
 		
 		expect_error(
 			require_a( 1, 1 ),
@@ -23,7 +23,7 @@ context("errors: positive controls")
 
 	})
 
-	test_that("errors are thrown for invalid properties", {
+	test_that("errors are thrown for invalid traits", {
 
 		expect_error(
 			require_a('ten-foot-elephant', 1),
@@ -32,7 +32,7 @@ context("errors: positive controls")
 
 	})
 
-	test_that("errors are thrown when the object doesn't match its properties", {
+	test_that("errors are thrown when the object doesn't match its traits", {
 
 		expect_error(
 			require_a('integer call', 0.1),

@@ -1,8 +1,8 @@
 Package: needy
 Type: Package
-Title: 1
-Description: needy is a small utility library for R, which makes it easy to assert what properties an input or arbitrary R should have. 
-Version: 0.3
+Title: needy
+Description: needy is a small utility library for R, which makes it easy to assert what properties an input or arbitrary R object should have.
+Version: 0.1
 Depends:
     R (>= 2.14.0)
 Date: 2013-02-03
@@ -16,3 +16,4 @@ License: MIT
 Collate:
     'require_a.R'
  	'tools.R'
+ 	'trait_tests.R'

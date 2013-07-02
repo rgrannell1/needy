@@ -1,8 +1,8 @@
 
 #' @export
 
-require_a <- function (properties, value) {
-	# test that a value has the specified properties
+needs_a <- function (traits, value) {
+	# test that a value has the specified traits
 
 	this_call <- deparse_to_string( sys.call() )
 	pframe <- parent.frame()
@@ -15,82 +15,89 @@ require_a <- function (properties, value) {
 			"%s: the parameter 'value' was missing but is required", 
 			this_call)
 	}
-	if (missing(properties)) {
+	if (missing(traits)) {
 		stopf (
-			"%s: the parameter 'properties' was missing but is required", 
+			"%s: the parameter 'traits' was missing but is required", 
 			this_call)
 	}
-	if (!is.character(properties)) {
+	if (!is.character(traits)) {
 		stopf (
-			"%s: properties must be a character vector", 
+			"%s: traits must be a character vector", 
 			this_call)
 	}
-	if (length(properties) == 0) {
+	if (length(traits) == 0) {
 		return (TRUE)
 	}
 
-	keys <- parse_properties(properties)
-	check_properties(keys, value)
+	check_traits(
+		traits = parse_traits(traits),
+		value)
 }
 
-parse_properties <- function (properties) {
-	# process the raw seach terms, and output
-	# a list of terms corresponding to processes
+parse_traits <- function (traits) {
+	# takes the raw traits string, and 
+	# transforms it into a list of
+	# trait groups to test
+	
+	this_call <- "require_a(traits, value)"
 
-	this_call <- "require_a(properties, value)"
-	split_regexp <- '[ \t\n]+'
+	report <- list(
+		invalid_traits = 
+			function (invalid) {
+				# some traits were unmatched.
+				# report them.
 
-	keys <- lapply(properties, function (group) {
+				stopf(
+					"%s: unrecognised trait(s): (%s)", 
+					this_call, 
+					paste0(invalid, collapse = ', '))
+			}
+	)
 
-		members <- strsplit(group, split_regexp)[[1]]
-		invalid <- setdiff(members, 
-			property_tests$listed_properties)
+	delimiter <- '[\t\n]+'
 
-		if (length(invalid) > 0) {
+	traits <- lapply(
+		traits,
+		function (group) {
 
-			what <- if (length(invalid) == 1) {
-				'property'
-			} else 'properties'  
+			members <- strsplit(group, split = delimiter)[[1]]
+			invalid <- setdiff(
+				members, 
+				trait_tests$listed_traits)
 
-			stopf("%s: unrecognised %s (%s)", 
-				this_call, what,
-				paste0(invalid, collapse = ', '))
+			if (length(invalid) > 0) {
+				report$invalid_traits(invalid)
+			}
+			members
 		}
-
-		members
-	})
-
-	# reorder the keys so that shorter composite 
-	# properties are checked first
-
-	group_sizes <- vapply(keys, length, 1)
-	keys
+	)
+	traits
 }
 
-check_properties <- function (properties, value) {
+check_traits <- function (traits, value) {
 	# does the value have at least one 
-	# group of properties?
+	# group of traits?
 	# if yes, return true. otherwise, throw a descriptive error
 	
-	this_call <- "require_a(properties, value)"
+	this_call <- "require_a(traits, value)"
 	
 	report <- list (
 		non_boolean = 
-			function (val, property) {
+			function (val, trait) {
 				# report that the value wasn't a boolean value,
-				# along with the property being tested
+				# along with the trait being tested
 
 				msg <- '%s:
-					the test for the property "%s" returned a non true/false value:
+					the test for the trait "%s" returned a non true/false value:
 					actual value was %s'
 
 				stopf(msg,
-					this_call, property, deparse_to_string(result))
+					this_call, trait, deparse_to_string(result))
 			},
 		no_match =
 			function (value) {
 				# report that the value didn't
-				# match any the required properties
+				# match any the required traits
 				
 				msg <- "%s: the value %s didn't match any of the following:
 				%s"
@@ -102,44 +109,47 @@ check_properties <- function (properties, value) {
 					paste0(unlist(x), collapse = ', or ')
 				}
 
-				readable_properties <- 
-					or_collapse(sapply(properties, and_collapse))
+				readable_traits <- 
+					or_collapse(sapply(traits, and_collapse))
 
 				stopf(
 					msg, this_call,
 					deparse_to_string(value),
-					readable_properties)
-			}
+					readable_traits)
+			},
 		error_encountered = 
 			function (error) {
 				# report the error along with what
 				# was being tested at the time
 
 				msg <- '%s:
-				an error was encountered while testing for the the property "%s":
+				an error was encountered while testing for the the trait "%s":
 				%s'
 
 				stopf(msg,
-					this_call, property, error$message)
+					this_call, trait, error$message)
 			}
 	) 
 
-	for (propgroup in properties) {
+	# iterate over the traits, trying to find 
+	# some group of traits that value matched
+
+	for (propgroup in traits) {
 
 		group_matched <- TRUE
 		
-		for (property in propgroup) {
+		for (trait in propgroup) {
 			
 			member_matched <- 
 				tryCatch({
-					# testing the value is risky, so do it
-					# in a trycatch
+					# testing the value is risky, 
+					# so do it in a trycatch
 
-					has_property <- property_tests[[property]]
-					result <- has_property(value)
+					has_trait <- trait_tests[[trait]]
+					result <- has_trait(value)
 
 					if (!is.logical(result) || is.na(result)) {
-						report$non_boolean(result, property)
+						report$non_boolean(result, trait)
 					}
 					result},
 					error = report$error_encountered
