@@ -28,7 +28,7 @@ require_a <- function (properties, value) {
 	if (length(properties) == 0) {
 		return (TRUE)
 	}
-	
+
 	keys <- parse_properties(properties)
 	check_properties(keys, value)
 }
@@ -70,49 +70,90 @@ parse_properties <- function (properties) {
 check_properties <- function (properties, value) {
 	# does the value have at least one 
 	# group of properties?
-	# if yes, return true.
-	# otherwise, throw a descriptive error
+	# if yes, return true. otherwise, throw a descriptive error
 	
 	this_call <- "require_a(properties, value)"
-	msg <- list (
+	
+	report <- list (
 		non_boolean = 
-			'%s: the test for the property "%s" returned a non true/false value: actual value was %s',
-		error_encounted = '%s: an error was encountered while testing for the the property "%s": \n %s'
+			function (val, property) {
+				# report that the value wasn't a boolean value,
+				# along with the property being tested
+
+				msg <- '%s:
+					the test for the property "%s" returned a non true/false value:
+					actual value was %s'
+
+				stopf(msg,
+					this_call, property, deparse_to_string(result))
+			},
+		no_match =
+			function (value) {
+				# report that the value didn't
+				# match any the required properties
+				
+				msg <- "%s: the value %s didn't match any of the following:
+				%s"
+
+				and_collapse <- function (x) {
+					paste0(x, collapse = ' and ')
+				}
+				or_collapse <- function (x) {
+					paste0(unlist(x), collapse = ', or ')
+				}
+
+				readable_properties <- 
+					or_collapse(sapply(properties, and_collapse))
+
+				stopf(
+					msg, this_call,
+					deparse_to_string(value),
+					readable_properties)
+			}
+		error_encountered = 
+			function (error) {
+				# report the error along with what
+				# was being tested at the time
+
+				msg <- '%s:
+				an error was encountered while testing for the the property "%s":
+				%s'
+
+				stopf(msg,
+					this_call, property, error$message)
+			}
 	) 
 
 	for (propgroup in properties) {
 
 		group_matched <- TRUE
 		
-		for (propname in propgroup) {
+		for (property in propgroup) {
 			
-			member_matched <- tryCatch({
+			member_matched <- 
+				tryCatch({
 					# testing the value is risky, so do it
 					# in a trycatch
 
-					predicate <- property_tests[[propname]]
-					result <- predicate(value)
+					has_property <- property_tests[[property]]
+					result <- has_property(value)
 
 					if (!is.logical(result) || is.na(result)) {
-						stopf(msg$non_boolean,
-							this_call, propname, deparse_to_string(result))
-
-					} else result
-
-				},
-				error = function (error) {
-					stopf(msg$error_encounted,
-						this_call, propname, error$message
-					)
-				}
-			)
-
-			# short-circuit if the member didn't match
+						report$non_boolean(result, property)
+					}
+					result},
+					error = report$error_encountered
+				)
+			
 			if (!member_matched) {
+				# short-circuit group if the
+				# member didn't match
+
 				group_matched <- FALSE
 				break
 			} else {
-				group_matched <- group_matched && member_matched
+				group_matched <- 
+					group_matched && member_matched
 			}
 		}
 
@@ -121,17 +162,7 @@ check_properties <- function (properties, value) {
 		}
 	}
 
-	human_readable_properties <- 
-		paste0( sapply(properties, function (group) {
-			paste0(unlist(group), collapse = ' and ')
-		}), collapse = ', or ' )
-
-	stopf(
-		"%s: the value %s didn't satisfy any of the following groups of properties:\n %s",
-		this_call, deparse_to_string(value), human_readable_properties
-
-	)
-
+	report$no_match(value)
 }
 
 
