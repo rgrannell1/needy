@@ -11,18 +11,23 @@ require_a <- function (properties, value) {
 		as.list( match.call()[-1] )$value)
 
 	if (missing(value)) {
-		stopf ("%s: the parameter 'value' was missing but is required", 
+		stopf (
+			"%s: the parameter 'value' was missing but is required", 
 			this_call)
 	}
 	if (missing(properties)) {
-		stopf ("%s: the parameter 'properties' was missing but is required", 
+		stopf (
+			"%s: the parameter 'properties' was missing but is required", 
 			this_call)
 	}
 	if (!is.character(properties)) {
-		stopf ("%s: properties must be a character vector", 
+		stopf (
+			"%s: properties must be a character vector", 
 			this_call)
 	}
-	if (length(properties) == 0) return (TRUE)
+	if (length(properties) == 0) {
+		return (TRUE)
+	}
 	
 	keys <- parse_properties(properties)
 	check_properties(keys, value)
@@ -33,10 +38,11 @@ parse_properties <- function (properties) {
 	# a list of terms corresponding to processes
 
 	this_call <- "require_a(properties, value)"
+	split_regexp <- '[ \t\n]+'
 
 	keys <- lapply(properties, function (group) {
 
-		members <- strsplit(group, '[ \t\n]+')[[1]]
+		members <- strsplit(group, split_regexp)[[1]]
 		invalid <- setdiff(members, 
 			property_tests$listed_properties)
 
@@ -68,79 +74,65 @@ check_properties <- function (properties, value) {
 	# otherwise, throw a descriptive error
 	
 	this_call <- "require_a(properties, value)"
+	msg <- list (
+		non_boolean = 
+			'%s: the test for the property "%s" returned a non true/false value: actual value was %s',
+		error_encounted = '%s: an error was encountered while testing for the the property "%s": \n %s'
+	) 
 
 	for (propgroup in properties) {
 
 		group_matched <- TRUE
 		
 		for (propname in propgroup) {
-
-			predicate <- property_tests[propname]
 			
 			member_matched <- tryCatch({
-					# testing the value is risky
+					# testing the value is risky, so do it
+					# in a trycatch
+
+					predicate <- property_tests[[propname]]
 					result <- predicate(value)
 
-					if (!is.logical(result) || result) {
-						stopf(
-							"%s: the test %s returned a non true/false value: actual value was %s",
+					if (!is.logical(result) || is.na(result)) {
+						stopf(msg$non_boolean,
 							this_call, propname, deparse_to_string(result))
 
 					} else result
 
 				},
-				,
-				warning = function (warning) {
-
-				},
 				error = function (error) {
-
+					stopf(msg$error_encounted,
+						this_call, propname, error$message
+					)
 				}
 			)
 
-			if (!member_matched) break else {
+			# short-circuit if the member didn't match
+			if (!member_matched) {
+				group_matched <- FALSE
+				break
+			} else {
 				group_matched <- group_matched && member_matched
 			}
 		}
 
-		if (group_matched) return (TRUE)
+		if (group_matched) {
+			return (TRUE)
+		}
 	}
 
+	human_readable_properties <- 
+		paste0( sapply(properties, function (group) {
+			paste0(unlist(group), collapse = ' and ')
+		}), collapse = ', or ' )
 
+	stopf(
+		"%s: the value %s didn't satisfy any of the following groups of properties:\n %s",
+		this_call, deparse_to_string(value), human_readable_properties
+
+	)
 
 }
-
-property_tests <- ( function () { 
-	# create a hash table containing 
-	# property-testing functions
-
-	lookup <- new.env(parent = emptyenv())
-	lookup$any = 
-		function (value) TRUE
-	lookup$array =
-		is.array
-	lookup$atomic = 
-		is.atomic
-	lookup$call = 
-		is.call
-	lookup$character =
-		is.character
-
-	# object related predicates
-	lookup$object = 
-		function (value) {
-			!is.null(attr(value, 'class'))
-		}
-	lookup$s4 = 
-		isS4
-
-
-	lookup$listed_properties <- ls(lookup)
-	lookup
-} )()
-
-
-
 
 
 

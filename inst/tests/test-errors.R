@@ -35,8 +35,8 @@ context("errors: positive controls")
 	test_that("errors are thrown when the object doesn't match its properties", {
 
 		expect_error(
-			require_a('integer', 0.1),
-			'integer'
-		)
+			require_a('integer call', 0.1),
+			'integer and call')
 
 	})
+
