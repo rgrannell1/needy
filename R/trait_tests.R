@@ -1,4 +1,4 @@
-
+ 
 trait_tests <- ( function () { 
 	# create a hash table containing 
 	# trait-testing functions
@@ -20,7 +20,6 @@ trait_tests <- ( function () {
 	lookup$complex =  is.complex
 	lookup$data.frame =  is.data.frame
 	lookup$double = is.double
-	lookup$empty.model =  is.empty.model
 	lookup$environment = is.environment
 	lookup$expression =  is.expression
 	lookup$factor = is.factor

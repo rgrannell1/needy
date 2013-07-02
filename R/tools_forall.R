@@ -3,6 +3,28 @@ Generator <- function (f) {
 	list(structure(list(f = f), class = "generator"))
 }
 
+accWhile <- function (func) {
+	# ( [a] -> NULL | [b] ) -> [b]
+	# accumulates a list of the return values
+	# of func in a sublist, until func returns NULL.
+
+	acc <- list()
+	res <- func (acc)
+
+	while (!is.null(res)) {
+		acc <- c(acc, list(res))
+		res <- func(acc)
+	}
+	acc
+}
+
+is_boolean <- function (x) {
+	# is the value true or false
+	
+	length(x) > 0 && is.logical(x) && !is.na(x)
+}
+
+
 stopwatch <- function (seconds) {
 	# returns a function with Sys.time( ) 
 	# captured in a closure

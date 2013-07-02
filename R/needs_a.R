@@ -124,11 +124,12 @@ check_traits <- function (traits, value, pcall) {
 				# was being tested at the time
 
 				msg <- '%s:
-				an error was encountered while testing for the the trait "%s":
+				an error was encountered while testing %s for the the trait "%s":
 				%s'
 
 				stopf(msg,
-					pcall, trait, error$message)
+					pcall, deparse_to_string(value),
+					trait, error$message)
 			}
 	) 
 
@@ -175,11 +176,3 @@ check_traits <- function (traits, value, pcall) {
 
 	report$no_match(value)
 }
-
-
-
-
-
-
-
-

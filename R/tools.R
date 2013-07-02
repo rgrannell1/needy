@@ -19,3 +19,5 @@ warningf <- function (string, ...) {
 	string <- paste0(string, collapse = '')
 	warning(gettextf(string, ...), call.=FALSE)
 }
+
+"%throws%" = function (a, b) if (a) b
