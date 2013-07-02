@@ -2,8 +2,7 @@
 #' @export
 
 require_a <- function (properties, value) {
-	# test that an object with the appropriate values
-	# exists in the parent frame
+	# test that a value has the specified properties
 
 	this_call <- deparse_to_string( sys.call() )
 	pframe <- parent.frame()
@@ -23,28 +22,49 @@ require_a <- function (properties, value) {
 		stopf ("%s: properties must be a character vector", 
 			this_call)
 	}
-	if (length(properties) == 0) {
-		return (TRUE)
-	}
+	if (length(properties) == 0) return (TRUE)
+	
+	keys <- parse_properties(properties)
 
-	# split each composite property string 
-	# into a character vector
+
+}
+
+parse_properties <- function (properties) {
+	# process the raw seach terms, and output
+	# a list of terms corresponding to processes
 
 	keys <- lapply(properties, function (group) {
-		
+		strsplit(group, '[ \t\n]+')[[1]]
 	})
 
 	# reorder the keys so that shorter composite 
 	# properties are checked first
 
-	group_sizes <- vapply(keys, length, 'a')
-	keys <- keys[ sort(order(group_sizes)[keys]) ]
-
-
-
+	group_sizes <- vapply(keys, length, 1)
+	keys
 }
 
-property_tests <- new.env()
+property_tests <- ( function () { 
+	# create a hash table containing 
+	# property-testing functions
+
+	lookup <- new.env(parent = emptyenv())
+	lookup$any = 
+		function (value) TRUE
+	lookup$array =
+		is.array
+	lookup$atomic = 
+		is.atomic
+	lookup$call = 
+		is.call
+
+
+
+
+
+
+	lookup
+} )()
 
 
 
