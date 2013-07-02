@@ -1,5 +1,4 @@
 
-
 #' @export
 
 deparse_to_string <- function (x) {
@@ -9,5 +8,5 @@ deparse_to_string <- function (x) {
 #' @export
 
 stopf <- function (string, ...) {
-	stop(gettextf(string, ...))
+	stop(gettextf(string, ...), call.=FALSE)
 }
