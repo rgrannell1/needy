@@ -1,10 +1,14 @@
 
 #' @export
 
-needs_a <- function (traits, value) {
+needs_a <- function (traits, value, pcall = NULL) {
 	# test that a value has the specified traits
 
-	this_call <- deparse_to_string( sys.call() )
+	pcall <- if (is.null(pcall)) {
+		deparse_to_string( sys.call() )
+	} else {
+		pcall
+	}
 	pframe <- parent.frame()
 
 	value_name <- deparse_to_string(
@@ -13,34 +17,33 @@ needs_a <- function (traits, value) {
 	if (missing(value)) {
 		stopf (
 			"%s: the parameter 'value' was missing but is required", 
-			this_call)
+			pcall)
 	}
 	if (missing(traits)) {
 		stopf (
 			"%s: the parameter 'traits' was missing but is required", 
-			this_call)
+			pcall)
 	}
 	if (!is.character(traits)) {
 		stopf (
 			"%s: traits must be a character vector", 
-			this_call)
+			pcall)
 	}
 	if (length(traits) == 0) {
 		return (TRUE)
 	}
 
 	check_traits(
-		traits = parse_traits(traits),
-		value)
+		traits = parse_traits(traits, pcall),
+		value,
+		pcall)
 }
 
-parse_traits <- function (traits) {
+parse_traits <- function (traits, pcall) {
 	# takes the raw traits string, and 
 	# transforms it into a list of
 	# trait groups to test
 	
-	this_call <- "require_a(traits, value)"
-
 	report <- list(
 		invalid_traits = 
 			function (invalid) {
@@ -49,12 +52,12 @@ parse_traits <- function (traits) {
 
 				stopf(
 					"%s: unrecognised trait(s): (%s)", 
-					this_call, 
+					pcall, 
 					paste0(invalid, collapse = ', '))
 			}
 	)
 
-	delimiter <- '[\t\n]+'
+	delimiter <- '[ \t\n]+'
 
 	traits <- lapply(
 		traits,
@@ -74,13 +77,11 @@ parse_traits <- function (traits) {
 	traits
 }
 
-check_traits <- function (traits, value) {
+check_traits <- function (traits, value, pcall) {
 	# does the value have at least one 
 	# group of traits?
 	# if yes, return true. otherwise, throw a descriptive error
-	
-	this_call <- "require_a(traits, value)"
-	
+		
 	report <- list (
 		non_boolean = 
 			function (val, trait) {
@@ -92,7 +93,7 @@ check_traits <- function (traits, value) {
 					actual value was %s'
 
 				stopf(msg,
-					this_call, trait, deparse_to_string(result))
+					pcall, trait, deparse_to_string(result))
 			},
 		no_match =
 			function (value) {
@@ -113,7 +114,7 @@ check_traits <- function (traits, value) {
 					or_collapse(sapply(traits, and_collapse))
 
 				stopf(
-					msg, this_call,
+					msg, pcall,
 					deparse_to_string(value),
 					readable_traits)
 			},
@@ -127,18 +128,18 @@ check_traits <- function (traits, value) {
 				%s'
 
 				stopf(msg,
-					this_call, trait, error$message)
+					pcall, trait, error$message)
 			}
 	) 
 
 	# iterate over the traits, trying to find 
 	# some group of traits that value matched
 
-	for (propgroup in traits) {
+	for (trait_group in traits) {
 
 		group_matched <- TRUE
 		
-		for (trait in propgroup) {
+		for (trait in trait_group) {
 			
 			member_matched <- 
 				tryCatch({

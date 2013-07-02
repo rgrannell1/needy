@@ -14,7 +14,7 @@ trait_tests <- ( function () {
 	# (mostly) builtin functions,
 	# tht mostly test the class of the object
 	lookup$array = is.array
-	lookup$atomic =  is.atomic
+	lookup$atomic = is.atomic
 	lookup$call =  is.call
 	lookup$character = is.character
 	lookup$complex =  is.complex
@@ -24,38 +24,52 @@ trait_tests <- ( function () {
 	lookup$environment = is.environment
 	lookup$expression =  is.expression
 	lookup$factor = is.factor
-	lookup$finite =  is.finite
+	lookup$finite =  
+		function (value) {
+			is.numeric(value) && is.finite
+		}
 	lookup$'function' = is.function
-	lookup$infinite =  is.infinite
+	lookup$infinite =  
+		function (value) {
+			is.numeric(value) && is.infinite
+		}
 	lookup$integer = is.integer
 	lookup$language = is.language
 	lookup$list = is.list
-	lookup$logical =  is.logical
-	lookup$matrix =  is.matrix
-	lookup$na = is.na
+	lookup$logical = is.logical
+	lookup$matrix = is.matrix
+	lookup$na = 
+		function (value) {
+			is.vector(value) && is.na(value)
+		}
 	lookup$name = is.name
-	lookup$nan = is.nan
+	lookup$nan = 
+		function (value) {
+			is.numeric(value) && is.nan(value)
+		}
 	lookup$null = is.null
-	lookup$numeric =  is.numeric
+	lookup$numeric = is.numeric
 	lookup$object = 
 		function (value) {
 			# a decent test for objectness
 			!is.null(attr(value, 'class'))
 		}
-	lookup$ordered = is.ordered
-	lookup$pairlist =is.pairlist
+	lookup$pairlist = is.pairlist
 	lookup$primitive = is.primitive
 	lookup$raw = is.raw
 	lookup$recursive = is.recursive
 	lookup$s4 = isS4
-	lookup$single =is.single
-	lookup$symbol =is.symbol
+	lookup$symbol = is.symbol
 	lookup$true = isTRUE
-	lookup$table =is.table
+	lookup$table = is.table
 	lookup$unsorted =is.unsorted
 	lookup$vector = is.vector
 
 	# tests I find useful
+	lookup$false = 
+		function (value) {
+			is.logical(value) && !is.na(value) && !isTRUE(value)
+		}
 	lookup$closure = 
 		function (value) {
 			is.function(value) && !is.primitive(value)
@@ -112,19 +126,80 @@ trait_tests <- ( function () {
 			length(value) == 3
 		}
 
-	lookup$unary = 
+	lookup$nullary = 
 		function (value) {
+			if (!is.function (value)) {
+				return (FALSE)
+			}
+			xParams <- function (f) {
+				if (is.primitive(f)) {
+					head( as.list(args(f)), -1 )
+				} else {
+					formals(f)
+				}
+			}
+			params <- xParams(value)
 
+			if ("..." %in% names(params)) TRUE else {
+				length(params) == 0
+			}
+		}
+	lookup$unary =  
+		function (value) {
+			if (!is.function (value)) {
+				return (FALSE)
+			}
+			xParams <- function (f) {
+				if (is.primitive(f)) {
+					head( as.list(args(f)), -1 )
+				} else {
+					formals(f)
+				}
+			}
+			params <- xParams(value)
+
+			if ("..." %in% names(params)) TRUE else {
+				length(params) == 1
+			}
 		}
 	lookup$binary =
 		function (value) {
+			if (!is.function (value)) {
+				return (FALSE)
+			}
+			xParams <- function (f) {
+				if (is.primitive(f)) {
+					head( as.list(args(f)), -1 )
+				} else {
+					formals(f)
+				}
+			}
+			params <- xParams(value)
 
+			if ("..." %in% names(params)) TRUE else {
+				length(params) == 2
+			}
 		}
-	lookup$trinary = 
+	lookup$ternary = 
 		function (value) {
+			if (!is.function (value)) {
+				return (FALSE)
+			}
+			xParams <- function (f) {
+				if (is.primitive(f)) {
+					head( as.list(args(f)), -1 )
+				} else {
+					formals(f)
+				}
+			}
+			params <- xParams(value)
 
+			if ("..." %in% names(params)) TRUE else {
+				length(params) == 3
+			}
 		}
 
 	lookup$listed_traits <- ls(lookup)
 	lookup
+
 } )()
