@@ -9,24 +9,23 @@ needs_a <- function (traits, value, pcall = NULL) {
 	} else {
 		pcall
 	}
-	pframe <- parent.frame()
 
 	value_name <- deparse_to_string(
 		as.list( match.call()[-1] )$value)
 
 	if (missing(value)) {
 		stopf (
-			"%s: the parameter 'value' was missing but is required", 
+			"%s: the parameter 'value' was missing but is required\n", 
 			pcall)
 	}
 	if (missing(traits)) {
 		stopf (
-			"%s: the parameter 'traits' was missing but is required", 
+			"%s: the parameter 'traits' was missing but is required\n", 
 			pcall)
 	}
 	if (!is.character(traits)) {
 		stopf (
-			"%s: traits must be a character vector", 
+			"%s: traits must be a character vector\n", 
 			pcall)
 	}
 	if (length(traits) == 0) {
@@ -51,7 +50,7 @@ parse_traits <- function (traits, pcall) {
 				# report them.
 
 				stopf(
-					"%s: unrecognised trait(s): (%s)", 
+					"%s: unrecognised trait(s): (%s)\n", 
 					pcall, 
 					paste0(invalid, collapse = ', '))
 			}
@@ -82,7 +81,7 @@ check_traits <- function (traits, value, pcall) {
 	# group of traits?
 	# if yes, return true. otherwise, throw a descriptive error
 		
-	report <- list (
+	report <- list ( 
 		non_boolean = 
 			function (val, trait) {
 				# report that the value wasn't a boolean value,
@@ -90,7 +89,7 @@ check_traits <- function (traits, value, pcall) {
 
 				msg <- '%s:
 					the test for the trait "%s" returned a non true/false value:
-					actual value was %s'
+					actual value was %s\n'
 
 				stopf(msg,
 					pcall, trait, deparse_to_string(result))
@@ -101,7 +100,7 @@ check_traits <- function (traits, value, pcall) {
 				# match any the required traits
 				
 				msg <- "%s: the value %s didn't match any of the following:
-				%s"
+				%s\n"
 
 				and_collapse <- function (x) {
 					paste0(x, collapse = ' and ')
@@ -123,9 +122,9 @@ check_traits <- function (traits, value, pcall) {
 				# report the error along with what
 				# was being tested at the time
 
-				msg <- '%s:
-				an error was encountered while testing %s for the the trait "%s":
-				%s'
+				msg <- '%s:\n
+				an error was encountered while testing %s for the the trait "%s":\n
+				%s\n'
 
 				stopf(msg,
 					pcall, deparse_to_string(value),

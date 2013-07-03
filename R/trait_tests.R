@@ -25,12 +25,12 @@ trait_tests <- ( function () {
 	lookup$factor = is.factor
 	lookup$finite =  
 		function (value) {
-			is.numeric(value) && is.finite
+			is.numeric(value) && is.finite(value)
 		}
 	lookup$'function' = is.function
 	lookup$infinite =  
 		function (value) {
-			is.numeric(value) && is.infinite
+			is.numeric(value) && is.infinite(value)
 		}
 	lookup$integer = is.integer
 	lookup$language = is.language
@@ -39,7 +39,8 @@ trait_tests <- ( function () {
 	lookup$matrix = is.matrix
 	lookup$na = 
 		function (value) {
-			is.vector(value) && is.na(value)
+			is.vector(value) && 
+			!is.expression(value) && is.na(value)
 		}
 	lookup$name = is.name
 	lookup$nan = 
@@ -61,7 +62,6 @@ trait_tests <- ( function () {
 	lookup$symbol = is.symbol
 	lookup$true = isTRUE
 	lookup$table = is.table
-	lookup$unsorted =is.unsorted
 	lookup$vector = is.vector
 
 	# tests I find useful
@@ -76,20 +76,22 @@ trait_tests <- ( function () {
 	lookup$whole = 
 		function (value) {
 			is.numeric(value) && 
+			is.finite(value) &&
 			abs(round(value) - value) < .Machine$double.eps
 		}
 	lookup$positive = 
 		function (value) {
-			is.numeric(value) && value > 0
+			is.numeric(value) && !is.nan(value) && value > 0
 		}
 	lookup$nonnegative =
 		function (value) {
-			is.numeric(value) >= 0
+			is.numeric(value) && !is.nan(value) && value >= 0
 		}
 	lookup$named = 
 		function (value) {
 
 			( is.vector(value) || is.pairlist(value) ) &&
+			!is.expression(value) &&
 			if (length(value) > 0) {
 				all(nchar(names(value)) > 0)
 			} else TRUE
