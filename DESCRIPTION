@@ -1,7 +1,7 @@
 Package: needy
 Type: Package
 Title: needy
-Description: needy is a small utility library designed to make R's dynamic typing less
+Description: needy is a small utility library designed to make testing function inputs less difficult.R is a dynamically typed language, but larger projects need some degree of input validation for scalabity. needy offers a single function, needs_a( ), which lets you specify the traits an object should have, such as class, size, numerical properties or number of parameters.
 Version: 0.1
 Depends:
     R (>= 2.14.0)

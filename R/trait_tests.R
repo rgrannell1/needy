@@ -1,15 +1,11 @@
  
 trait_tests <- ( function () { 
-	# create a hash table containing 
-	# trait-testing functions
+	# create an environment containing trait-
+	# testing functions, for speed of access.
 
 	lookup <- new.env(parent = emptyenv())
 	
-	# useful for the case in which no type 
-	# checking is needed, but the value should actually
-	# exist
-	lookup$any = 
-		function (value) TRUE
+	lookup$any = function (value) TRUE
 
 	# (mostly) builtin functions,
 	# tht mostly test the class of the object
@@ -66,9 +62,7 @@ trait_tests <- ( function () {
 
 	# tests I find useful
 	lookup$false = 
-		function (value) {
-			is.logical(value) && !is.na(value) && !isTRUE(value)
-		}
+		Negate(isTRUE)
 	lookup$closure = 
 		function (value) {
 			is.function(value) && !is.primitive(value)
@@ -126,19 +120,19 @@ trait_tests <- ( function () {
 		function (value) {
 			length(value) == 3
 		}
-
+	xParams <- function (f) {
+		if (is.primitive(f)) {
+			head( as.list(args(f)), -1 )
+		} else {
+			formals(f)
+		}
+	}
 	lookup$nullary = 
 		function (value) {
 			if (!is.function (value)) {
 				return (FALSE)
 			}
-			xParams <- function (f) {
-				if (is.primitive(f)) {
-					head( as.list(args(f)), -1 )
-				} else {
-					formals(f)
-				}
-			}
+
 			params <- xParams(value)
 
 			if ("..." %in% names(params)) TRUE else {
@@ -150,13 +144,7 @@ trait_tests <- ( function () {
 			if (!is.function (value)) {
 				return (FALSE)
 			}
-			xParams <- function (f) {
-				if (is.primitive(f)) {
-					head( as.list(args(f)), -1 )
-				} else {
-					formals(f)
-				}
-			}
+
 			params <- xParams(value)
 
 			if ("..." %in% names(params)) TRUE else {
@@ -168,13 +156,7 @@ trait_tests <- ( function () {
 			if (!is.function (value)) {
 				return (FALSE)
 			}
-			xParams <- function (f) {
-				if (is.primitive(f)) {
-					head( as.list(args(f)), -1 )
-				} else {
-					formals(f)
-				}
-			}
+
 			params <- xParams(value)
 
 			if ("..." %in% names(params)) TRUE else {
@@ -186,13 +168,7 @@ trait_tests <- ( function () {
 			if (!is.function (value)) {
 				return (FALSE)
 			}
-			xParams <- function (f) {
-				if (is.primitive(f)) {
-					head( as.list(args(f)), -1 )
-				} else {
-					formals(f)
-				}
-			}
+
 			params <- xParams(value)
 
 			if ("..." %in% names(params)) TRUE else {

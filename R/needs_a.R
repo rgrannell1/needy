@@ -2,7 +2,10 @@
 #' @export
 
 needs_a <- function (traits, value, pcall = NULL) {
-	# test that a value has the specified traits
+	# test if the value has the required traits,
+	# if it doesn't throw a helpful error. decorate with 
+	# pcall so the error will look like it came from the user's 
+	# function of choice.
 
 	pcall <- if (is.null(pcall)) {
 		deparse_to_string( sys.call() )
@@ -25,17 +28,22 @@ needs_a <- function (traits, value, pcall = NULL) {
 	}
 	if (!is.character(traits)) {
 		stopf (
-			"%s: traits must be a character vector\n", 
-			pcall)
+			"%s: the parameter 'traits' must be a character vector\n
+			actual class was %s
+			", 
+			pcall, paste0(class(traits), collapse = ", "))
 	}
 	if (length(traits) == 0) {
-		return (TRUE)
+		TRUE
+	} else {
+		check_traits(
+			parse_traits(
+				traits,
+				pcall
+			),
+			value,
+			pcall)		
 	}
-
-	check_traits(
-		traits = parse_traits(traits, pcall),
-		value,
-		pcall)
 }
 
 parse_traits <- function (traits, pcall) {
@@ -58,22 +66,21 @@ parse_traits <- function (traits, pcall) {
 
 	delimiter <- '[ \t\n]+'
 
-	traits <- lapply(
+	lapply(
 		traits,
-		function (group) {
+		function (supertrait) {
 
-			members <- strsplit(group, split = delimiter)[[1]]
+			subtraits <- strsplit(supertrait, split = delimiter)[[1]]
 			invalid <- setdiff(
-				members, 
+				subtraits, 
 				trait_tests$listed_traits)
 
 			if (length(invalid) > 0) {
 				report$invalid_traits(invalid)
 			}
-			members
+			subtraits
 		}
 	)
-	traits
 }
 
 check_traits <- function (traits, value, pcall) {
@@ -88,11 +95,12 @@ check_traits <- function (traits, value, pcall) {
 				# along with the trait being tested
 
 				msg <- '%s:
-					the test for the trait "%s" returned a non true/false value:
+					the value %s returned a non true/false value when tested for the trait %s:\n
 					actual value was %s\n'
 
 				stopf(msg,
-					pcall, trait, deparse_to_string(result))
+					pcall, deparse_to_string(value),
+					trait, deparse_to_string(result))
 			},
 		no_match =
 			function (value) {
@@ -123,7 +131,7 @@ check_traits <- function (traits, value, pcall) {
 				# was being tested at the time
 
 				msg <- '%s:\n
-				an error was encountered while testing %s for the the trait "%s":\n
+				an error was encountered while testing the value %s for the the trait "%s":\n
 				%s\n'
 
 				stopf(msg,
@@ -135,22 +143,22 @@ check_traits <- function (traits, value, pcall) {
 	# iterate over the traits, trying to find 
 	# some group of traits that value matched
 
-	for (trait_group in traits) {
+	for (supertrait in traits) {
 
-		group_matched <- TRUE
+		supertrait_matched <- TRUE
 		
-		for (trait in trait_group) {
+		for (subtrait in supertrait) {
 			
 			member_matched <- 
 				tryCatch({
 					# testing the value is risky, 
 					# so do it in a trycatch
 
-					has_trait <- trait_tests[[trait]]
+					has_trait <- trait_tests[[subtrait]]
 					result <- has_trait(value)
 
 					if (!is.logical(result) || is.na(result)) {
-						report$non_boolean(result, trait)
+						report$non_boolean(result, subtrait)
 					}
 					result},
 					error = report$error_encountered
@@ -160,15 +168,12 @@ check_traits <- function (traits, value, pcall) {
 				# short-circuit group if the
 				# member didn't match
 
-				group_matched <- FALSE
+				supertrait_matched <- FALSE
 				break
-			} else {
-				group_matched <- 
-					group_matched && member_matched
 			}
 		}
 
-		if (group_matched) {
+		if (supertrait_matched) {
 			return (TRUE)
 		}
 	}
