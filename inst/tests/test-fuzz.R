@@ -1,6 +1,6 @@
 
 
-listed_traits <- trait_tests$listed_traits
+listed_traits <- trait_tests$valid_traits
 
 pick_one <- function (x) {
 	sample(x, size = 1)

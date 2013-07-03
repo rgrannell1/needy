@@ -71,7 +71,8 @@ trait_tests <- ( function () {
 		function (value) {
 			is.numeric(value) && 
 			is.finite(value) &&
-			abs(round(value) - value) < .Machine$double.eps
+			( is.integer(value) || 
+			(abs(round(value) - value) < .Machine$double.eps) )
 		}
 	lookup$positive = 
 		function (value) {
@@ -176,7 +177,7 @@ trait_tests <- ( function () {
 			}
 		}
 
-	lookup$listed_traits <- ls(lookup)
+	lookup$valid_traits <- ls(lookup)
 	lookup
 
 } )()

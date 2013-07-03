@@ -7,10 +7,14 @@ needs_a <- function (traits, value, pcall = NULL) {
 	# pcall so the error will look like it came from the user's 
 	# function of choice.
 
-	pcall <- if (is.null(pcall)) {
-		deparse_to_string( sys.call() )
+	valid_pcall <- !is.null(pcall) ||
+		is.character(pcall) ||
+		is.call(pcall)
+
+	pcall <- if (valid_pcall) {
+		deparse_to_string(pcall)
 	} else {
-		pcall
+		deparse_to_string( sys.call() )
 	}
 
 	value_name <- deparse_to_string(
@@ -41,8 +45,7 @@ needs_a <- function (traits, value, pcall = NULL) {
 				traits,
 				pcall
 			),
-			value,
-			pcall)		
+			value, pcall)		
 	}
 }
 
@@ -73,7 +76,7 @@ parse_traits <- function (traits, pcall) {
 			subtraits <- strsplit(supertrait, split = delimiter)[[1]]
 			invalid <- setdiff(
 				subtraits, 
-				trait_tests$listed_traits)
+				trait_tests$valid_traits)
 
 			if (length(invalid) > 0) {
 				report$invalid_traits(invalid)
@@ -90,9 +93,9 @@ check_traits <- function (traits, value, pcall) {
 		
 	report <- list ( 
 		non_boolean = 
-			function (val, trait) {
+			function (val, subtrait) {
 				# report that the value wasn't a boolean value,
-				# along with the trait being tested
+				# along with the subtrait being tested
 
 				msg <- '%s:
 					the value %s returned a non true/false value when tested for the trait %s:\n
@@ -100,7 +103,7 @@ check_traits <- function (traits, value, pcall) {
 
 				stopf(msg,
 					pcall, deparse_to_string(value),
-					trait, deparse_to_string(result))
+					subtrait, deparse_to_string(result))
 			},
 		no_match =
 			function (value) {
@@ -136,8 +139,21 @@ check_traits <- function (traits, value, pcall) {
 
 				stopf(msg,
 					pcall, deparse_to_string(value),
-					trait, error$message)
-			}
+					subtrait, error$message)
+			},
+		warning_encountered =
+			function (warning) {
+				# report the warning along with what
+				# was being tested at the time
+
+				msg <- '%s:\n
+				a warning was encountered while testing the value %s for the the trait "%s":\n
+				%s\n'
+
+				warningf(msg,
+					pcall, deparse_to_string(value),
+					subtrait, warning$message)
+			}		
 	) 
 
 	# iterate over the traits, trying to find 
@@ -161,7 +177,8 @@ check_traits <- function (traits, value, pcall) {
 						report$non_boolean(result, subtrait)
 					}
 					result},
-					error = report$error_encountered
+					error = report$error_encountered,
+					warning = report$warning_encountered
 				)
 			
 			if (!member_matched) {
