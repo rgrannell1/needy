@@ -16,18 +16,7 @@ test_that(
 		value  <- "this is a value"
 		error <- list(message = "I am an error message")
 
-		all_patterns <- function (x) {
-			# get every permutation of elements in x,
-			# collapse them with |.
 
-			permutations <- sapply(
-				combinat::permn(x),
-				function (perm) {
-					paste0(perm, collapse = ".+")
-				})
-
-			paste0(permutations, collapse = "|")
-		}
 
 		expect_error(report$missing_traits(pcall), pcall)
 

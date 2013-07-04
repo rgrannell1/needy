@@ -17,5 +17,3 @@ all_patterns <- function (x) {
 
 test_package('needy')
 
-
-whole

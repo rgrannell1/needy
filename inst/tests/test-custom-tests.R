@@ -77,6 +77,14 @@ test_that("nonnegative works", {
 
 })
 
+test_that("whole works", {
+
+	f <- trait_tests$whole
+	expect_true(f(1))
+	expect_true(f(0L))
+	expect_false(f(1.000001))
+
+})
 
 test_that("named works", {
 

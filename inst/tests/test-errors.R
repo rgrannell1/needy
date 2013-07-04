@@ -20,7 +20,6 @@ test_that("valid errors are triggered where expected (+ group)", {
 	expect_error(
 		needs_a("positive integer", 'string', pcall), pcall
 	)
-	
 })
 
 test_that("errors aren't thrown for valid inputs (-)", {
