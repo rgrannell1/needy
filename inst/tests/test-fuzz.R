@@ -1,25 +1,6 @@
 
 listed_traits <- trait_tests$valid_traits
 
-pick_one <- function (x) {
-	sample(x, size = 1)
-}
-pick_len <- function (n) {
-	seq_len( pick_one(seq_len(n)) )
-}
-
-as_vector <- function (gen) {
-	# convert a single generator to a vector
-
-	Generator(
-		function () {
-			sapply(
-				pick_len(20),
-				function (...) gen[[1]]$f()
-			)
-		})
-}
-
 number_gen <- Generator(
 	function () pick_one(-100000:100000)
 )
