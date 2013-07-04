@@ -68,7 +68,9 @@ trait_tests <- ( function () {
 
 	# tests I find useful
 	test_for$false = 
-		Negate(isTRUE)
+		function (value) {
+			is.logical(value) && !is.na(value) && !value
+		}
 	test_for$closure = 
 		function (value) {
 			# is value a normal R functions?
@@ -109,7 +111,7 @@ trait_tests <- ( function () {
 		}
 	test_for$string = 
 		function (value) {
-			is.character(value) && length(character) == 1
+			is.character(value) && length(value) == 1
 		}
 	test_for$listy = 
 		function (value) {

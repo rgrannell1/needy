@@ -1,5 +1,5 @@
 
-context ("needs_a reports errors")
+context ("needs_a reports errors correctly")
 
 test_that("valid errors are triggered where expected (+ group)", {
 
@@ -35,3 +35,20 @@ test_that("errors aren't thrown for valid inputs (-)", {
 
 })
 
+context("no_match needs more validation")
+
+test_that("no_match displays the call, value, and traits", {
+
+	pcall <- "I am a call"
+	value <- "I am the input data"
+	traits <- c("positive integer", "matrix")
+
+	expect_error(
+		needs_a(traits, value, pcall),
+		all_patterns(c(
+			"positive",
+			"integer",
+			"matrix",
+			value, pcall))
+	)
+})
