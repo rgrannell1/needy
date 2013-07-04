@@ -1,5 +1,96 @@
 
+#' input validation
+
 #' @export
+
+report <- list(
+	missing_traits = function (pcall) {
+		stopf (
+			"%s: the parameter 'value' was missing but is required\n", 
+			pcall)
+	},
+	missing_value = function (pcall) {
+		stopf (
+			"%s: the parameter 'traits' was missing but is required\n", 
+			pcall)
+	},
+	traits_not_character = function (pcall, traits) {
+		stopf (
+			"%s: the parameter 'traits' must be a character vector\n
+			actual class was %s
+			", 
+			pcall, paste0(class(traits), collapse = ", "))
+	},
+	invalid_traits = function (pcall, invalid) {
+		stopf(
+			"%s: unrecognised trait(s): (%s)\n", 
+			pcall, 
+			paste0(invalid, collapse = ', '))		
+	},
+	non_boolean = 
+		function (pcall, value, subtrait, result) {
+			# report that the value wasn't a boolean value,
+			# along with the subtrait being tested, the parent call and 
+			# the actual non boolean result
+
+			msg <- '%s:
+				the value %s returned a non true/false value when tested for the trait %s:\n
+				actual value was %s\n'
+
+			stopf(msg,
+				pcall, deparse_to_string(value),
+				subtrait, deparse_to_string(result))
+		},
+	no_match =
+		function (pcall, value, traits) {
+			# report that the value didn't
+			# match any the required traits
+			
+			msg <- "%s: the value %s didn't match any of the following:
+			%s\n"
+
+			and_collapse <- function (x) {
+				paste0(x, collapse = ' and ')
+			}
+			or_collapse <- function (x) {
+				paste0(unlist(x), collapse = ', or ')
+			}
+
+			readable_traits <- 
+				or_collapse(sapply(traits, and_collapse))
+
+			stopf(msg,
+				pcall,
+				deparse_to_string(value),
+				readable_traits)
+		},
+	error_encountered = 
+		function (pcall, error, value, subtrait) {
+			# report the error along with what
+			# was being tested at the time
+
+			msg <- '%s:\n
+			an error was encountered while testing the value %s for the the trait "%s":\n
+			%s\n'
+
+			stopf(msg,
+				pcall, deparse_to_string(value),
+				subtrait, error$message)
+		},
+	warning_encountered =
+		function (pcall, warning, value, subtrait) {
+			# report the warning along with what
+			# was being tested at the time
+
+			msg <- '%s:\n
+			a warning was encountered while testing the value %s for the the trait "%s":\n
+			%s\n'
+
+			warningf(msg,
+				pcall, deparse_to_string(value),
+				subtrait, warning$message)
+		}
+)
 
 needs_a <- function (traits, value, pcall = NULL) {
 	# test if the value has the required traits,
@@ -21,21 +112,13 @@ needs_a <- function (traits, value, pcall = NULL) {
 		as.list( match.call()[-1] )$value)
 
 	if (missing(value)) {
-		stopf (
-			"%s: the parameter 'value' was missing but is required\n", 
-			pcall)
+		report$missing_value(pcall)
 	}
 	if (missing(traits)) {
-		stopf (
-			"%s: the parameter 'traits' was missing but is required\n", 
-			pcall)
+		report$missing_traits(pcall)
 	}
 	if (!is.character(traits)) {
-		stopf (
-			"%s: the parameter 'traits' must be a character vector\n
-			actual class was %s
-			", 
-			pcall, paste0(class(traits), collapse = ", "))
+		report$traits_not_character(pcall, traits)
 	}
 	if (length(traits) == 0) {
 		TRUE
@@ -49,29 +132,18 @@ needs_a <- function (traits, value, pcall = NULL) {
 	}
 }
 
-parse_traits <- function (traits, pcall) {
+parse_traits <- function (trait_string, pcall) {
 	# takes the raw traits string, and 
 	# transforms it into a list of
 	# trait groups to test
 	
-	report <- list(
-		invalid_traits = 
-			function (invalid) {
-				# some traits were unmatched.
-				# report them.
-
-				stopf(
-					"%s: unrecognised trait(s): (%s)\n", 
-					pcall, 
-					paste0(invalid, collapse = ', '))
-			}
-	)
-
 	delimiter <- '[ \t\n]+'
 
 	lapply(
-		traits,
+		trait_string,
 		function (supertrait) {
+			# each element defines a supertrait.
+			# split into subtraits and check them.
 
 			subtraits <- strsplit(supertrait, split = delimiter)[[1]]
 			invalid <- setdiff(
@@ -79,9 +151,10 @@ parse_traits <- function (traits, pcall) {
 				trait_tests$valid_traits)
 
 			if (length(invalid) > 0) {
-				report$invalid_traits(invalid)
+				report$invalid_traits(pcall, invalid)
+			} else {
+				subtraits
 			}
-			subtraits
 		}
 	)
 }
@@ -89,72 +162,7 @@ parse_traits <- function (traits, pcall) {
 check_traits <- function (traits, value, pcall) {
 	# does the value have at least one 
 	# group of traits?
-	# if yes, return true. otherwise, throw a descriptive error
-		
-	report <- list ( 
-		non_boolean = 
-			function (val, subtrait) {
-				# report that the value wasn't a boolean value,
-				# along with the subtrait being tested
-
-				msg <- '%s:
-					the value %s returned a non true/false value when tested for the trait %s:\n
-					actual value was %s\n'
-
-				stopf(msg,
-					pcall, deparse_to_string(value),
-					subtrait, deparse_to_string(result))
-			},
-		no_match =
-			function (value) {
-				# report that the value didn't
-				# match any the required traits
-				
-				msg <- "%s: the value %s didn't match any of the following:
-				%s\n"
-
-				and_collapse <- function (x) {
-					paste0(x, collapse = ' and ')
-				}
-				or_collapse <- function (x) {
-					paste0(unlist(x), collapse = ', or ')
-				}
-
-				readable_traits <- 
-					or_collapse(sapply(traits, and_collapse))
-
-				stopf(
-					msg, pcall,
-					deparse_to_string(value),
-					readable_traits)
-			},
-		error_encountered = 
-			function (error) {
-				# report the error along with what
-				# was being tested at the time
-
-				msg <- '%s:\n
-				an error was encountered while testing the value %s for the the trait "%s":\n
-				%s\n'
-
-				stopf(msg,
-					pcall, deparse_to_string(value),
-					subtrait, error$message)
-			},
-		warning_encountered =
-			function (warning) {
-				# report the warning along with what
-				# was being tested at the time
-
-				msg <- '%s:\n
-				a warning was encountered while testing the value %s for the the trait "%s":\n
-				%s\n'
-
-				warningf(msg,
-					pcall, deparse_to_string(value),
-					subtrait, warning$message)
-			}		
-	) 
+	# if yes, return true. otherwise, throw a descriptive error.
 
 	# iterate over the traits, trying to find 
 	# some group of traits that value matched
@@ -174,11 +182,18 @@ check_traits <- function (traits, value, pcall) {
 					result <- has_trait(value)
 
 					if (!is.logical(result) || is.na(result)) {
-						report$non_boolean(result, subtrait)
+						report$non_boolean(
+							pcall, value, subtrait, result)
 					}
 					result},
-					error = report$error_encountered,
-					warning = report$warning_encountered
+					error = function (error) {
+						report$error_encountered(
+							pcall, error, value, subtrait)
+					},
+					warning = function (warning) {
+						report$warning_encountered(
+							pcall, warning, value, subtrait)
+					}
 				)
 			
 			if (!member_matched) {
