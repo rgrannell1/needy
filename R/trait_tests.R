@@ -3,8 +3,11 @@ trait_tests <- ( function () {
 	# create an environment containing trait-
 	# testing functions, for speed of access.
 
-	lookup <- new.env(parent = emptyenv())
+	lookup <- new.env(
+		parent = emptyenv()
+	)
 	
+	# useful for testing purposes
 	lookup$any = function (value) TRUE
 
 	# (mostly) builtin functions,
@@ -47,7 +50,8 @@ trait_tests <- ( function () {
 	lookup$numeric = is.numeric
 	lookup$object = 
 		function (value) {
-			# a decent test for objectness
+			# a decent test for objectness,
+			# since the built-in is for internal use only
 			!is.null(attr(value, 'class'))
 		}
 	lookup$pairlist = is.pairlist
@@ -65,31 +69,37 @@ trait_tests <- ( function () {
 		Negate(isTRUE)
 	lookup$closure = 
 		function (value) {
+			# is value a normal R functions?
 			is.function(value) && !is.primitive(value)
 		}
 	lookup$whole = 
 		function (value) {
+			# is value a whole number, 
+			# within double precision limits?
+
 			is.numeric(value) && 
 			is.finite(value) &&
 			( is.integer(value) || 
-			(abs(round(value) - value) < .Machine$double.eps) )
+				(abs(round(value) - value) < .Machine$double.eps) )
 		}
 	lookup$positive = 
 		function (value) {
-			is.numeric(value) && !is.nan(value) && value > 0
+			is.numeric(value) && 
+			!is.nan(value) && value > 0
 		}
 	lookup$nonnegative =
 		function (value) {
-			is.numeric(value) && !is.nan(value) && value >= 0
+			is.numeric(value) && 
+			!is.nan(value) && value >= 0
 		}
 	lookup$named = 
 		function (value) {
+			# does a listish value have names
 
 			( is.vector(value) || is.pairlist(value) ) &&
 			!is.expression(value) &&
-			if (length(value) > 0) {
-				all(nchar(names(value)) > 0)
-			} else TRUE
+			(length(value) == 0 || 
+				all(nchar(names(value)) > 0))
 		}
 	lookup$boolean =
 		function (value) {
@@ -101,7 +111,12 @@ trait_tests <- ( function () {
 		}
 	lookup$listy = 
 		function (value) {
-			is.vector(value) || is.list(value) || is.pairlist(value)
+			# is the value a list, vector or 
+			# pairlist?
+
+			is.vector(value) || 
+			is.list(value) || 
+			is.pairlist(value)
 		}
 
 	# quantifiers
@@ -121,6 +136,10 @@ trait_tests <- ( function () {
 		function (value) {
 			length(value) == 3
 		}
+
+	# from my library arrow. consistent way
+	# of checking function parameters/formals
+
 	xParams <- function (f) {
 		if (is.primitive(f)) {
 			head( as.list(args(f)), -1 )
@@ -128,51 +147,40 @@ trait_tests <- ( function () {
 			formals(f)
 		}
 	}
+
 	lookup$nullary = 
 		function (value) {
-			if (!is.function (value)) {
-				return (FALSE)
-			}
+			!is.function (value) || {
+				params <- xParams(value)
 
-			params <- xParams(value)
-
-			if ("..." %in% names(params)) TRUE else {
+				"..." %in% names(params) ||
 				length(params) == 0
 			}
 		}
 	lookup$unary =  
 		function (value) {
-			if (!is.function (value)) {
-				return (FALSE)
-			}
+			!is.function (value) || {
+				params <- xParams(value)
 
-			params <- xParams(value)
-
-			if ("..." %in% names(params)) TRUE else {
+				"..." %in% names(params) ||
 				length(params) == 1
 			}
 		}
 	lookup$binary =
 		function (value) {
-			if (!is.function (value)) {
-				return (FALSE)
-			}
+			!is.function (value) || {
+				params <- xParams(value)
 
-			params <- xParams(value)
-
-			if ("..." %in% names(params)) TRUE else {
+				"..." %in% names(params) ||
 				length(params) == 2
 			}
 		}
 	lookup$ternary = 
 		function (value) {
-			if (!is.function (value)) {
-				return (FALSE)
-			}
+			!is.function (value) || {
+				params <- xParams(value)
 
-			params <- xParams(value)
-
-			if ("..." %in% names(params)) TRUE else {
+				"..." %in% names(params) ||
 				length(params) == 3
 			}
 		}

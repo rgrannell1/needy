@@ -3,7 +3,44 @@
 
 #' @export
 
+needs_a <- function (traits, value, pcall = NULL) {
+	# test if the value has the required traits,
+	# if it doesn't throw a helpful error. decorate with 
+	# pcall so the error will look like it came from the user's 
+	# function of choice.
 
+	valid_pcall <- 
+		!is.null(pcall) && (
+		is.character(pcall) ||
+		is.call(pcall))
+
+	pcall <- if (valid_pcall) {
+		deparse_to_string(pcall)
+	} else {
+		deparse_to_string( sys.call() )
+	}
+
+	if (missing(value)) {
+		report$missing_value(pcall)
+	}
+	if (missing(traits)) {
+		report$missing_traits(pcall)
+	}
+	if (!is.character(traits)) {
+		report$traits_not_character(pcall, traits)
+	}
+
+	# no traits are specified, or 
+	# the value has at least one group of traits
+
+	(length(traits) == 0) ||
+		check_traits(
+			parse_traits(
+				traits,
+				pcall
+			),
+			value, pcall)
+}
 
 # an object (well, list...) containing 
 # functions that report various errors and warnings
@@ -97,44 +134,6 @@ report <- list(
 				inputs$subtrait, warning$message)
 		}
 )
-
-needs_a <- function (traits, value, pcall = NULL) {
-	# test if the value has the required traits,
-	# if it doesn't throw a helpful error. decorate with 
-	# pcall so the error will look like it came from the user's 
-	# function of choice.
-
-	valid_pcall <- !is.null(pcall) ||
-		is.character(pcall) ||
-		is.call(pcall)
-
-	pcall <- if (valid_pcall) {
-		deparse_to_string(pcall)
-	} else {
-		deparse_to_string( sys.call() )
-	}
-
-	value_name <- deparse_to_string(
-		as.list( match.call()[-1] )$value)
-
-	if (missing(value)) {
-		report$missing_value(pcall)
-	}
-	if (missing(traits)) {
-		report$missing_traits(pcall)
-	}
-	if (!is.character(traits)) {
-		report$traits_not_character(pcall, traits)
-	}
-	(length(traits) == 0) ||
-		check_traits(
-			parse_traits(
-				traits,
-				pcall
-			),
-			value, pcall)
-	}
-}
 
 parse_traits <- function (trait_string, pcall) {
 	# takes the raw traits string, and 
