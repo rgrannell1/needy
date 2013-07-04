@@ -90,10 +90,9 @@ needs_a <- function (traits, value, pcall = NULL) {
 			value, pcall)
 }
 
-# an object (well, list...) containing 
-# functions that report various errors and warnings
-
 report <- list(
+	# an object (well, list...) containing 
+	# functions that report various errors and warnings
 	missing_traits = function (pcall) {
 		stopf (
 			"%s: the parameter 'value' was missing but is required\n", 
@@ -127,18 +126,25 @@ report <- list(
 				the value %s returned a non true/false value when tested for the trait %s:\n
 				actual value was %s\n'
 
+			readable <- list(
+				value = deparse_to_string(inputs$value),
+				actual = deparse_to_string(actual)
+			)
+
 			stopf(msg,
 				pcall, 
-				deparse_to_string(inputs$value), inputs$subtrait,
-				deparse_to_string(actual))
+				readable$value, inputs$subtrait,
+				readable$actual)
 		},
 	no_match =
 		function (pcall, value, traits) {
 			# report that the value didn't
-			# match any the required traits
+			# match any the required traits, and find some 
+			# traits that did match
 			
-			msg <- "%s: the value %s didn't match any of the following compound traits:
-			%s\n"
+			msg <- "%s: 
+				the value %s didn't match any of the following compound traits:
+				%s\n"
 
 			and_collapse <- function (x) {
 				paste0(x, collapse = ' and ')
@@ -147,13 +153,15 @@ report <- list(
 				paste0(unlist(x), collapse = ', or ')
 			}
 
-			readable_traits <- 
-				or_collapse(sapply(traits, and_collapse))
+			readable <- list(
+				value = deparse_to_string(value),
+				expected = or_collapse(sapply(traits, and_collapse))
+			)
 
 			stopf(msg,
 				pcall,
-				deparse_to_string(value),
-				readable_traits)
+				readable$value,
+				readable$expected)
 		},
 	error_encountered = 
 		function (pcall, error, inputs) {
@@ -164,8 +172,12 @@ report <- list(
 			an error was encountered while testing the value %s for the the trait "%s":\n
 			%s\n'
 
+			readable <- list(
+				value = deparse_to_string(inputs$value)
+			)
+
 			stopf(msg,
-				pcall, deparse_to_string(inputs$value),
+				pcall, readable$value,
 				inputs$subtrait, error$message)
 		},
 	warning_encountered =
@@ -177,8 +189,12 @@ report <- list(
 			a warning was encountered while testing the value %s for the the trait "%s":\n
 			%s\n'
 
-			warningf(msg,
-				pcall, deparse_to_string(inputs$value),
+			readable <- list(
+				value = deparse_to_string(inputs$value)
+			)
+
+			stopf(msg,
+				pcall, readable$value,
 				inputs$subtrait, warning$message)
 		}
 )
@@ -214,14 +230,14 @@ is_boolean <- function (x) {
 	is.logical(x) && !is.na(x)
 }
 
-check_traits <- function (traits, value, pcall) {
+check_traits <- function (trait_vector, value, pcall) {
 	# does the value have at least one 
 	# group of traits?
 	# if yes, return true. otherwise, throw a descriptive error.
 
-	# display errors/warnings and the data
-	# that triggered them
 	error_handler <- function (error) {
+		# display errors/warnings and the data
+		# that triggered them
 
 		report$error_encountered(
 			pcall, error, 
@@ -238,43 +254,40 @@ check_traits <- function (traits, value, pcall) {
 				subtrait = subtrait))
 	}
 
-	for (supertrait in traits) {
+	for (supertrait in trait_vector) {
 
 		supertrait_matched <- TRUE
 		
 		for (subtrait in supertrait) {
 			# return true if every value matched every 
 			# member in this group of traits 
-
-			subtrait_matched <- 
-				tryCatch({
-					# testing the value is risky, 
-					# so do it in a trycatch
-
-					has_trait <- trait_tests[[subtrait]]
-					subtrait_matched <- has_trait(value)
-
-					if (!is_boolean(subtrait_matched)) {
-						
-						report$non_boolean(
-							pcall,
-							inputs = list(
-								value = value,
-								subtrait = subtrait),
-							actual = subtrait_matched)
-					}
-					
-					subtrait_matched
-
-					},
-					error = error_handler,
-					warning = warning_handler
-				)
 			
+			subtrait_matched <- tryCatch({
+				# testing the value is risky, 
+				# so do it in a trycatch
+
+				has_subtrait <- trait_tests[[subtrait]]
+				subtrait_matched <- has_subtrait(value)
+
+				if (!is_boolean(subtrait_matched)) {
+					
+					report$non_boolean(
+						pcall,
+						inputs = list(
+							value = value,
+							subtrait = subtrait),
+						actual = subtrait_matched)
+				}
+				
+				subtrait_matched
+
+				},
+				error = error_handler,
+				warning = warning_handler
+			)
+				
 			if (!subtrait_matched) {
-				# short-circuit group if the
-				# member didn't match, otherwise
-				# check the rest of the traits in the group too
+				# short-circuit group if the member didn't match
 
 				supertrait_matched <- FALSE
 				break
@@ -282,12 +295,11 @@ check_traits <- function (traits, value, pcall) {
 		}
 
 		if (supertrait_matched) {
-			# no need to check any more supertraits,
-			# value does match some group of traits
 			break
 		}
 	}
 
 	# throw an error if no supertraits matched
-	supertrait_matched ||report$no_match(pcall, value, traits)	
+	supertrait_matched ||report$no_match(
+		pcall, value, trait_vector)	
 }
