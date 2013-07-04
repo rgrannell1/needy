@@ -131,7 +131,7 @@ report <- list(
 
 			stopf(text,
 				pcall, 
-				readable$value, inputs$subtrait,
+				readable$value, inputs$trait,
 				readable$actual)
 		},
 	no_match =
@@ -171,7 +171,7 @@ report <- list(
 
 			stopf(text,
 				pcall, readable$value,
-				inputs$subtrait, error$message)
+				inputs$trait, error$message)
 		},
 	warning_encountered =
 		function (pcall, warning, inputs) {
@@ -186,7 +186,7 @@ report <- list(
 
 			stopf(text,
 				pcall, readable$value,
-				inputs$subtrait, warning$message)
+				inputs$trait, warning$message)
 		}
 )
 
@@ -199,17 +199,17 @@ parse_traits <- function (trait_string, pcall) {
 
 	lapply(
 		trait_string,
-		function (supertrait) {
-			# each element defines a supertrait.
-			# split into subtraits and check them.
+		function (compound_trait) {
+			# each element defines a compound_trait.
+			# split into traits and check them.
 
-			subtraits <- strsplit(supertrait, split = delimiter)[[1]]
+			traits <- strsplit(compound_trait, split = delimiter)[[1]]
 			invalid <- setdiff(
-				subtraits, 
+				traits, 
 				trait_tests$valid_traits)
 
 			if (length(invalid) == 0) {
-				subtraits
+				traits
 			} else {
 				report$invalid_traits(pcall, invalid)
 			}
@@ -231,7 +231,7 @@ check_traits <- function (trait_vector, value, pcall) {
 			pcall, error, 
 			inputs = list(
 				value = value,
-				value = subtrait))
+				value = trait))
 	}
 	warning_handler <- function (warning) {
 
@@ -239,54 +239,54 @@ check_traits <- function (trait_vector, value, pcall) {
 			pcall, warning, 
 			inputs = list(
 				value = value,
-				subtrait = subtrait))
+				trait = trait))
 	}
 
-	for (supertrait in trait_vector) {
+	for (compound_trait in trait_vector) {
 
-		supertrait_matched <- TRUE
+		compound_trait_matched <- TRUE
 		
-		for (subtrait in supertrait) {
+		for (trait in compound_trait) {
 			# return true if every value matched every 
 			# member in this group of traits 
 			
-			subtrait_matched <- tryCatch({
+			trait_matched <- tryCatch({
 				# testing the value is risky, 
 				# so do it in a trycatch
 
-				has_subtrait <- trait_tests[[subtrait]]
-				subtrait_matched <- has_subtrait(value)
+				has_trait <- trait_tests[[trait]]
+				trait_matched <- has_trait(value)
 
-				if (!is_boolean(subtrait_matched)) {
+				if (!is_boolean(trait_matched)) {
 					
 					report$non_boolean(
 						pcall,
 						inputs = list(
 							value = value,
-							subtrait = subtrait),
-						actual = subtrait_matched)
+							trait = trait),
+						actual = trait_matched)
 				}
 				
-				subtrait_matched
+				trait_matched
 				},
 				error = error_handler,
 				warning = warning_handler
 			)
 				
-			if (!subtrait_matched) {
+			if (!trait_matched) {
 				# short-circuit group if the member didn't match
 
-				supertrait_matched <- FALSE
+				compound_trait_matched <- FALSE
 				break
 			}
 		}
 
-		if (supertrait_matched) {
+		if (compound_trait_matched) {
 			break
 		}
 	}
 
 	# throw an error if no supertraits matched
-	supertrait_matched ||report$no_match(
+	compound_trait_matched ||report$no_match(
 		pcall, value, trait_vector)	
 }
