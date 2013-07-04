@@ -3,6 +3,11 @@
 
 #' @export
 
+
+
+# an object (well, list...) containing 
+# functions that report various errors and warnings
+
 report <- list(
 	missing_traits = function (pcall) {
 		stopf (
@@ -192,7 +197,7 @@ check_traits <- function (traits, value, pcall) {
 			# return true if every value matched every 
 			# member in this group of traits 
 
-			member_matched <- 
+			subtrait_matched <- 
 				tryCatch({
 					# testing the value is risky, 
 					# so do it in a trycatch
@@ -209,13 +214,15 @@ check_traits <- function (traits, value, pcall) {
 								subtrait = subtrait),
 							actual = subtrait_matched)
 					}
+					
+					subtrait_matched
 
-					subtrait_matched},
+					},
 					error = error_handler,
 					warning = warning_handler
 				)
 			
-			if (!member_matched) {
+			if (!subtrait_matched) {
 				# short-circuit group if the
 				# member didn't match, otherwise
 				# check the rest of the traits in the group too
@@ -226,6 +233,8 @@ check_traits <- function (traits, value, pcall) {
 		}
 
 		if (supertrait_matched) {
+			# no need to check any more supertraits,
+			# value does match some group of traits
 			break
 		}
 	}
