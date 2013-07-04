@@ -1,32 +1,37 @@
 
-context("error functions on report$ can be invoked directly")
+context(
+	"error functions on report have to be shown to be fully functional
+	when given reasonable inputs."
+)
 
-forall(
-	"error functions don't throw errors themselved (call is always displayed)",
-	list(
-		pcall  = word_gen, traits = words_gen, invalid = words_gen,
-		inputs = list(
-			list(
-				trait = "a trait",
-				value = +9001)
-		),
-		actual = word_gen,
-		value = word_gen,
-		error = list(
-			list(message = 'error thrown')
-		)
-	),
-	function (pcall, traits, invalid, inputs, actual, value, error) {
-		# check that each of the expected fields are being 
-		# displayed in the output (won't happen in function is broken).
+test_that(
+	"check that each of the expected fields are being 
+	displayed in the output (won't happen if function is broken", {
 
-		expect_error(
-			report$missing_traits(pcall),
-			pcall)
+		pcall <- 'this is a call'
+		traits <- c("trait one", "trait two")
+		invalid <- "white-elephant"
+		inputs <- list( value = 10000, trait = "string" )
+		actual <- "actual-value"
+		value  <- "this is a value"
+		error <- list(message = "I am an error message")
 
-		expect_error(
-			report$missing_value(pcall),
-			pcall)
+		all_patterns <- function (x) {
+			# get every permutation of elements in x,
+			# collapse them with |.
+
+			permutations <- sapply(
+				combinat::permn(x),
+				function (perm) {
+					paste0(perm, collapse = ".+")
+				})
+
+			paste0(permutations, collapse = "|")
+		}
+
+		expect_error(report$missing_traits(pcall), pcall)
+
+		expect_error(report$missing_value(pcall), pcall)
 
 		expect_error(
 			report$traits_not_character(pcall, traits),
@@ -39,8 +44,6 @@ forall(
 		expect_error(
 			report$non_boolean(pcall, inputs, actual),
 			all_patterns(c(pcall, inputs$value, inputs$trait, actual)) )
-
-		print( "asdasd")
 
 		expect_error(
 			report$no_match(pcall, value, traits),
@@ -57,7 +60,5 @@ forall(
 			all_patterns(c(
 				pcall, error,
 				inputs$value, inputs$trait)) )
-
-		TRUE
 	}
 )

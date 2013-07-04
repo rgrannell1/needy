@@ -141,11 +141,11 @@ report <- list(
 				the value %s didn't match any of the following compound traits:
 				%s\n"
 
-			and_collapse <- function (x) {
-				paste0(x, collapse = ' and ')
+			and_collapse <- function (val) {
+				paste0(val, collapse = ' and ')
 			}
-			or_collapse <- function (x) {
-				paste0(unlist(x), collapse = ', or ')
+			or_collapse <- function (val) {
+				paste0(unlist(val), collapse = ', or ')
 			}
 
 			readable <- list(
@@ -239,7 +239,7 @@ check_traits <- function (trait_vector, value, pcall) {
 			pcall, warning, 
 			inputs = list(
 				value = value,
-				trait = trait))
+				trait = subtrait))
 	}
 
 	for (compound_trait in trait_vector) {
