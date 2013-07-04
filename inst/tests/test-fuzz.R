@@ -1,5 +1,4 @@
 
-
 listed_traits <- trait_tests$valid_traits
 
 pick_one <- function (x) {

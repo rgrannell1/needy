@@ -94,6 +94,7 @@ report <- list(
 	# an object (well, list...) containing 
 	# functions that report various errors and warnings
 	missing_traits = function (pcall) {
+
 		stopf (
 			"%s: the parameter 'value' was missing but is required\n", 
 			pcall)
@@ -118,11 +119,8 @@ report <- list(
 	},
 	non_boolean = 
 		function (pcall, inputs, actual) {
-			# report that the value wasn't a boolean value,
-			# along with the subtrait being tested, the parent call and 
-			# the actual non boolean result
 
-			msg <- '%s:
+			text <- '%s:
 				the value %s returned a non true/false value when tested for the trait %s:\n
 				actual value was %s\n'
 
@@ -131,18 +129,15 @@ report <- list(
 				actual = deparse_to_string(actual)
 			)
 
-			stopf(msg,
+			stopf(text,
 				pcall, 
 				readable$value, inputs$subtrait,
 				readable$actual)
 		},
 	no_match =
 		function (pcall, value, traits) {
-			# report that the value didn't
-			# match any the required traits, and find some 
-			# traits that did match
 			
-			msg <- "%s: 
+			text <- "%s: 
 				the value %s didn't match any of the following compound traits:
 				%s\n"
 
@@ -158,17 +153,15 @@ report <- list(
 				expected = or_collapse(sapply(traits, and_collapse))
 			)
 
-			stopf(msg,
+			stopf(text,
 				pcall,
 				readable$value,
 				readable$expected)
 		},
 	error_encountered = 
 		function (pcall, error, inputs) {
-			# report the error along with what
-			# was being tested at the time
 
-			msg <- '%s:\n
+			text <- '%s:\n
 			an error was encountered while testing the value %s for the the trait "%s":\n
 			%s\n'
 
@@ -176,16 +169,14 @@ report <- list(
 				value = deparse_to_string(inputs$value)
 			)
 
-			stopf(msg,
+			stopf(text,
 				pcall, readable$value,
 				inputs$subtrait, error$message)
 		},
 	warning_encountered =
 		function (pcall, warning, inputs) {
-			# report the warning along with what
-			# was being tested at the time
 
-			msg <- '%s:\n
+			text <- '%s:\n
 			a warning was encountered while testing the value %s for the the trait "%s":\n
 			%s\n'
 
@@ -193,7 +184,7 @@ report <- list(
 				value = deparse_to_string(inputs$value)
 			)
 
-			stopf(msg,
+			stopf(text,
 				pcall, readable$value,
 				inputs$subtrait, warning$message)
 		}
@@ -204,7 +195,7 @@ parse_traits <- function (trait_string, pcall) {
 	# transforms it into a list of
 	# trait groups to test
 	
-	delimiter <- '[ \t\n]+'
+	delimiter <- '[ \t\n\r]+'
 
 	lapply(
 		trait_string,
@@ -217,13 +208,12 @@ parse_traits <- function (trait_string, pcall) {
 				subtraits, 
 				trait_tests$valid_traits)
 
-			if (length(invalid) > 0) {
-				report$invalid_traits(pcall, invalid)
-			} else {
+			if (length(invalid) == 0) {
 				subtraits
+			} else {
+				report$invalid_traits(pcall, invalid)
 			}
-		}
-	)
+	})
 }
 
 is_boolean <- function (x) {
@@ -236,8 +226,6 @@ check_traits <- function (trait_vector, value, pcall) {
 	# if yes, return true. otherwise, throw a descriptive error.
 
 	error_handler <- function (error) {
-		# display errors/warnings and the data
-		# that triggered them
 
 		report$error_encountered(
 			pcall, error, 
@@ -280,7 +268,6 @@ check_traits <- function (trait_vector, value, pcall) {
 				}
 				
 				subtrait_matched
-
 				},
 				error = error_handler,
 				warning = warning_handler
