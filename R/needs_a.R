@@ -28,7 +28,7 @@ report <- list(
 			paste0(invalid, collapse = ', '))		
 	},
 	non_boolean = 
-		function (pcall, value, subtrait, result) {
+		function (pcall, inputs, actual) {
 			# report that the value wasn't a boolean value,
 			# along with the subtrait being tested, the parent call and 
 			# the actual non boolean result
@@ -38,8 +38,9 @@ report <- list(
 				actual value was %s\n'
 
 			stopf(msg,
-				pcall, deparse_to_string(value),
-				subtrait, deparse_to_string(result))
+				pcall, 
+				deparse_to_string(inputs$value), inputs$subtrait,
+				deparse_to_string(actual))
 		},
 	no_match =
 		function (pcall, value, traits) {
@@ -65,7 +66,7 @@ report <- list(
 				readable_traits)
 		},
 	error_encountered = 
-		function (pcall, error, value, subtrait) {
+		function (pcall, error, inputs) {
 			# report the error along with what
 			# was being tested at the time
 
@@ -74,11 +75,11 @@ report <- list(
 			%s\n'
 
 			stopf(msg,
-				pcall, deparse_to_string(value),
-				subtrait, error$message)
+				pcall, deparse_to_string(inputs$value),
+				inputs$subtrait, error$message)
 		},
 	warning_encountered =
-		function (pcall, warning, value, subtrait) {
+		function (pcall, warning, inputs) {
 			# report the warning along with what
 			# was being tested at the time
 
@@ -87,8 +88,8 @@ report <- list(
 			%s\n'
 
 			warningf(msg,
-				pcall, deparse_to_string(value),
-				subtrait, warning$message)
+				pcall, deparse_to_string(inputs$value),
+				inputs$subtrait, warning$message)
 		}
 )
 
@@ -120,15 +121,13 @@ needs_a <- function (traits, value, pcall = NULL) {
 	if (!is.character(traits)) {
 		report$traits_not_character(pcall, traits)
 	}
-	if (length(traits) == 0) {
-		TRUE
-	} else {
+	(length(traits) == 0) ||
 		check_traits(
 			parse_traits(
 				traits,
 				pcall
 			),
-			value, pcall)		
+			value, pcall)
 	}
 }
 
@@ -159,46 +158,67 @@ parse_traits <- function (trait_string, pcall) {
 	)
 }
 
+is_boolean <- function (x) {
+	is.logical(x) && !is.na(x)
+}
+
 check_traits <- function (traits, value, pcall) {
 	# does the value have at least one 
 	# group of traits?
 	# if yes, return true. otherwise, throw a descriptive error.
 
-	# iterate over the traits, trying to find 
-	# some group of traits that value matched
+	# display errors/warnings and the data
+	# that triggered them
+	error_handler <- function (error) {
+		report$error_encountered(
+			pcall, error, 
+			inputs = list(
+				value = value,
+				value = subtrait))
+	}
+	warning_handler <- function (warning) {
+		report$warning_encountered(
+			pcall, warning, 
+			inputs = list(
+				value = value,
+				subtrait = subtrait))
+	}
 
 	for (supertrait in traits) {
 
 		supertrait_matched <- TRUE
 		
 		for (subtrait in supertrait) {
-			
+			# return true if every value matched every 
+			# member in this group of traits 
+
 			member_matched <- 
 				tryCatch({
 					# testing the value is risky, 
 					# so do it in a trycatch
 
 					has_trait <- trait_tests[[subtrait]]
-					result <- has_trait(value)
+					subtrait_matched <- has_trait(value)
 
-					if (!is.logical(result) || is.na(result)) {
+					if (!is_boolean(subtrait_matched)) {
+						
 						report$non_boolean(
-							pcall, value, subtrait, result)
+							pcall,
+							inputs = list(
+								value = value,
+								subtrait = subtrait),
+							actual = subtrait_matched)
 					}
-					result},
-					error = function (error) {
-						report$error_encountered(
-							pcall, error, value, subtrait)
-					},
-					warning = function (warning) {
-						report$warning_encountered(
-							pcall, warning, value, subtrait)
-					}
+
+					subtrait_matched},
+					error = error_handler,
+					warning = warning_handler
 				)
 			
 			if (!member_matched) {
 				# short-circuit group if the
-				# member didn't match
+				# member didn't match, otherwise
+				# check the rest of the traits in the group too
 
 				supertrait_matched <- FALSE
 				break
@@ -206,9 +226,13 @@ check_traits <- function (traits, value, pcall) {
 		}
 
 		if (supertrait_matched) {
-			return (TRUE)
+			break
 		}
 	}
 
-	report$no_match(value)
+	if (supertrait_matched) {
+		TRUE
+	} else {
+		report$no_match(value)	
+	}
 }
