@@ -1,40 +1,54 @@
 
-#' assert that value has specific properties
-
-#' needs_a provides a terse way of asserting that a value has certain traits, 
-#' such as being a certain length, being named or being a numeric value.
-
-#' @sections Traits
+#' ensure a value has a desired set of traits. 
 #'
-#' functions generally only operate on values that have certain traits; a set of 
-#' properties that a value must have for a sensible value to be computable. 
+#' @section Traits:
 #'
-#' for example, \code{Reduce} requires its function argument \code{f} is a binary function,
-#' and that the value \code{x} it reduces over is a list, or vector, or pairlist.  
+#' The \code{traits} parameter is a character vector of whitespace-seperated traits. For example, the following
+#' are syntactically valid 
 #'
-#' the \code{traits} parameter that needs_a requires encapsulates this way of descriping an object.
-#' traits is a character vector, of any length. Each string element of this character vector
-#' is a compound trait; a whitespace-seperated collection of traits that an object should have
-#' to be considered a valid value for your program.
+#' \code{"integer"}
+#'
+#' \code{"positive integer"}
+#'
+#' \code{c("positive    integer", "na")}
+#'
+#' \code{c("na", "null", "length_one   pairlist")}
 #' 
-#' if the character vector \code{traits} is longer that length-one, then every string element of this 
-#' vector is interpreted as an individual compound-trait, and an object should have every trait
-#' in at least one compound trait to be consider valid. For example,
+#' while the following are not
 #' 
-#' \code{ needs_a("positive numeric integer", +1L) }
-#' 
-#' passes because +1 is indeed positive AND a number AND an integer.
+#' \code{"positive && integer" # just use whitespace to 'and' traits}
 #'
-#' \code{ needs_a(c("length_one list", "length_one pairlist", "null"), NULL) } 
-
+#' \code{"positive || integer" # use two elements to 'or' traits}
+#'
+#' The latter two examples, correctly implemented, would be:
+#'
+#' \code{"positive integer"}
+#'
+#' \code{c("positive", "integer")}
+#'
+#' As suggested above, whitespace between traits is interpreted as "trait a AND trait b", while
+#' seperate elements are intepreted as \code{ c("trait one", OR "trait two") }
+#' the order of traits in a compound trait is not significant; a \code{"positive integer"} is 
+#' equivelant to \code{"integer positive"}. 
+#'
+#' If a test corresponding to an atomic trait is not found, an error is thrown:
+#'
+#' \code{needs_a("white-whale", 1)}
+#'
+#' \code{Error: needs_a("white-whale", 1): unrecognised trait(s): (white-whale)}
+#'
+#' similarily, if a value doesn't have any other desired compound traits then an error is thrown: 
+#'
+#' \code{needs_a(c("length_one list", "null"), 1)}
+#'
+#' \code{Error: needs_a(c("length_one list", "null"), 1): the value 1 didn't match any of the following compound traits:
+#'			length_one and list, or null'}
+#'
 #' @param traits a character vector, with each element being a space-seperated
-#' string of properties to test the value for. required. See details.
-
+#' string of properties to test the value for. See "traits". required.
 #' @value an arbitrary R object to test for certain properties. required.
-
 #' @param pcall an call or string that provides the call to be 
 #' displayed when an error is thrown by needs_a. See details. optional.
-
 #' @export
 
 needs_a <- function (traits, value, pcall = NULL) {
@@ -123,7 +137,7 @@ report <- list(
 			# report that the value didn't
 			# match any the required traits
 			
-			msg <- "%s: the value %s didn't match any of the following:
+			msg <- "%s: the value %s didn't match any of the following compound traits:
 			%s\n"
 
 			and_collapse <- function (x) {
@@ -275,5 +289,5 @@ check_traits <- function (traits, value, pcall) {
 	}
 
 	# throw an error if no supertraits matched
-	supertrait_matched ||report$no_match(value)	
+	supertrait_matched ||report$no_match(pcall, value, traits)	
 }
