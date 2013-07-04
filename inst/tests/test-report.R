@@ -4,17 +4,16 @@ context("error functions on report$ can be invoked directly")
 forall(
 	"error functions don't throw errors themselved (call is always displayed)",
 	list(
-		pcall  = word_gen,
-		traits = words_gen,
-		invalid = words_gen,
+		pcall  = word_gen, traits = words_gen, invalid = words_gen,
 		inputs = list(
-			trait = "a trait",
-			value = +9001
+			list(
+				trait = "a trait",
+				value = +9001)
 		),
 		actual = word_gen,
 		value = word_gen,
 		error = list(
-			message = 'error thrown'
+			list(message = 'error thrown')
 		)
 	),
 	function (pcall, traits, invalid, inputs, actual, value, error) {
@@ -40,6 +39,8 @@ forall(
 		expect_error(
 			report$non_boolean(pcall, inputs, actual),
 			all_patterns(c(pcall, inputs$value, inputs$trait, actual)) )
+
+		print( "asdasd")
 
 		expect_error(
 			report$no_match(pcall, value, traits),
