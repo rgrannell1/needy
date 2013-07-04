@@ -1,5 +1,39 @@
 
-#' input validation
+#' assert that value has specific properties
+
+#' needs_a provides a terse way of asserting that a value has certain traits, 
+#' such as being a certain length, being named or being a numeric value.
+
+#' @sections Traits
+#'
+#' functions generally only operate on values that have certain traits; a set of 
+#' properties that a value must have for a sensible value to be computable. 
+#'
+#' for example, \code{Reduce} requires its function argument \code{f} is a binary function,
+#' and that the value \code{x} it reduces over is a list, or vector, or pairlist.  
+#'
+#' the \code{traits} parameter that needs_a requires encapsulates this way of descriping an object.
+#' traits is a character vector, of any length. Each string element of this character vector
+#' is a compound trait; a whitespace-seperated collection of traits that an object should have
+#' to be considered a valid value for your program.
+#' 
+#' if the character vector \code{traits} is longer that length-one, then every string element of this 
+#' vector is interpreted as an individual compound-trait, and an object should have every trait
+#' in at least one compound trait to be consider valid. For example,
+#' 
+#' \code{ needs_a("positive numeric integer", +1L) }
+#' 
+#' passes because +1 is indeed positive AND a number AND an integer.
+#'
+#' \code{ needs_a(c("length_one list", "length_one pairlist", "null"), NULL) } 
+
+#' @param traits a character vector, with each element being a space-seperated
+#' string of properties to test the value for. required. See details.
+
+#' @value an arbitrary R object to test for certain properties. required.
+
+#' @param pcall an call or string that provides the call to be 
+#' displayed when an error is thrown by needs_a. See details. optional.
 
 #' @export
 
@@ -174,6 +208,7 @@ check_traits <- function (traits, value, pcall) {
 	# display errors/warnings and the data
 	# that triggered them
 	error_handler <- function (error) {
+
 		report$error_encountered(
 			pcall, error, 
 			inputs = list(
@@ -181,6 +216,7 @@ check_traits <- function (traits, value, pcall) {
 				value = subtrait))
 	}
 	warning_handler <- function (warning) {
+
 		report$warning_encountered(
 			pcall, warning, 
 			inputs = list(
@@ -238,9 +274,6 @@ check_traits <- function (traits, value, pcall) {
 		}
 	}
 
-	if (supertrait_matched) {
-		TRUE
-	} else {
-		report$no_match(value)	
-	}
+	# throw an error if no supertraits matched
+	supertrait_matched ||report$no_match(value)	
 }

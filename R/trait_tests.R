@@ -2,77 +2,79 @@
 trait_tests <- ( function () { 
 	# create an environment containing trait-
 	# testing functions, for speed of access.
+	# needs_a checks traits using this environment as a 
+	# hash table.
 
-	lookup <- new.env(
+	test_for <- new.env(
 		parent = emptyenv()
 	)
 	
 	# useful for testing purposes
-	lookup$any = function (value) TRUE
+	test_for$any = function (value) TRUE
 
 	# (mostly) builtin functions,
 	# tht mostly test the class of the object
-	lookup$array = is.array
-	lookup$atomic = is.atomic
-	lookup$call =  is.call
-	lookup$character = is.character
-	lookup$complex =  is.complex
-	lookup$data.frame =  is.data.frame
-	lookup$double = is.double
-	lookup$environment = is.environment
-	lookup$expression =  is.expression
-	lookup$factor = is.factor
-	lookup$finite =  
+	test_for$array = is.array
+	test_for$atomic = is.atomic
+	test_for$call =  is.call
+	test_for$character = is.character
+	test_for$complex =  is.complex
+	test_for$data.frame =  is.data.frame
+	test_for$double = is.double
+	test_for$environment = is.environment
+	test_for$expression =  is.expression
+	test_for$factor = is.factor
+	test_for$finite =  
 		function (value) {
 			is.numeric(value) && is.finite(value)
 		}
-	lookup$'function' = is.function
-	lookup$infinite =  
+	test_for$'function' = is.function
+	test_for$infinite =  
 		function (value) {
 			is.numeric(value) && is.infinite(value)
 		}
-	lookup$integer = is.integer
-	lookup$language = is.language
-	lookup$list = is.list
-	lookup$logical = is.logical
-	lookup$matrix = is.matrix
-	lookup$na = 
+	test_for$integer = is.integer
+	test_for$language = is.language
+	test_for$list = is.list
+	test_for$logical = is.logical
+	test_for$matrix = is.matrix
+	test_for$na = 
 		function (value) {
 			is.vector(value) && 
 			!is.expression(value) && is.na(value)
 		}
-	lookup$name = is.name
-	lookup$nan = 
+	test_for$name = is.name
+	test_for$nan = 
 		function (value) {
 			is.numeric(value) && is.nan(value)
 		}
-	lookup$null = is.null
-	lookup$numeric = is.numeric
-	lookup$object = 
+	test_for$null = is.null
+	test_for$numeric = is.numeric
+	test_for$object = 
 		function (value) {
 			# a decent test for objectness,
 			# since the built-in is for internal use only
 			!is.null(attr(value, 'class'))
 		}
-	lookup$pairlist = is.pairlist
-	lookup$primitive = is.primitive
-	lookup$raw = is.raw
-	lookup$recursive = is.recursive
-	lookup$s4 = isS4
-	lookup$symbol = is.symbol
-	lookup$true = isTRUE
-	lookup$table = is.table
-	lookup$vector = is.vector
+	test_for$pairlist = is.pairlist
+	test_for$primitive = is.primitive
+	test_for$raw = is.raw
+	test_for$recursive = is.recursive
+	test_for$s4 = isS4
+	test_for$symbol = is.symbol
+	test_for$true = isTRUE
+	test_for$table = is.table
+	test_for$vector = is.vector
 
 	# tests I find useful
-	lookup$false = 
+	test_for$false = 
 		Negate(isTRUE)
-	lookup$closure = 
+	test_for$closure = 
 		function (value) {
 			# is value a normal R functions?
 			is.function(value) && !is.primitive(value)
 		}
-	lookup$whole = 
+	test_for$whole = 
 		function (value) {
 			# is value a whole number, 
 			# within double precision limits?
@@ -82,17 +84,17 @@ trait_tests <- ( function () {
 			( is.integer(value) || 
 				(abs(round(value) - value) < .Machine$double.eps) )
 		}
-	lookup$positive = 
+	test_for$positive = 
 		function (value) {
 			is.numeric(value) && 
 			!is.nan(value) && value > 0
 		}
-	lookup$nonnegative =
+	test_for$nonnegative =
 		function (value) {
 			is.numeric(value) && 
 			!is.nan(value) && value >= 0
 		}
-	lookup$named = 
+	test_for$named = 
 		function (value) {
 			# does a listish value have names
 
@@ -101,15 +103,15 @@ trait_tests <- ( function () {
 			(length(value) == 0 || 
 				all(nchar(names(value)) > 0))
 		}
-	lookup$boolean =
+	test_for$boolean =
 		function (value) {
 			is.logical(value) && !is.na(value)
 		}
-	lookup$string = 
+	test_for$string = 
 		function (value) {
 			is.character(value) && length(character) == 1
 		}
-	lookup$listy = 
+	test_for$listy = 
 		function (value) {
 			# is the value a list, vector or 
 			# pairlist?
@@ -120,25 +122,26 @@ trait_tests <- ( function () {
 		}
 
 	# quantifiers
-	lookup$length_zero = 
+	test_for$length_zero = 
 		function (value) {
 			length(value) == 0
 		}
-	lookup$length_one = 
+	test_for$length_one = 
 		function (value) {
 			length(value) == 1
 		}
-	lookup$length_two = 
+	test_for$length_two = 
 		function (value) {
 			length(value) == 2
 		}
-	lookup$length_three = 
+	test_for$length_three = 
 		function (value) {
 			length(value) == 3
 		}
 
 	# from my library arrow. consistent way
-	# of checking function parameters/formals
+	# of checking function parameters/formals.
+	# won't be attatched to the test_for environment
 
 	xParams <- function (f) {
 		if (is.primitive(f)) {
@@ -148,7 +151,9 @@ trait_tests <- ( function () {
 		}
 	}
 
-	lookup$nullary = 
+	# check function arity. variadic is always the desired arity
+
+	test_for$nullary = 
 		function (value) {
 			!is.function (value) || {
 				params <- xParams(value)
@@ -157,7 +162,7 @@ trait_tests <- ( function () {
 				length(params) == 0
 			}
 		}
-	lookup$unary =  
+	test_for$unary =  
 		function (value) {
 			!is.function (value) || {
 				params <- xParams(value)
@@ -166,7 +171,7 @@ trait_tests <- ( function () {
 				length(params) == 1
 			}
 		}
-	lookup$binary =
+	test_for$binary =
 		function (value) {
 			!is.function (value) || {
 				params <- xParams(value)
@@ -175,7 +180,7 @@ trait_tests <- ( function () {
 				length(params) == 2
 			}
 		}
-	lookup$ternary = 
+	test_for$ternary = 
 		function (value) {
 			!is.function (value) || {
 				params <- xParams(value)
@@ -185,7 +190,7 @@ trait_tests <- ( function () {
 			}
 		}
 
-	lookup$valid_traits <- ls(lookup)
-	lookup
+	test_for$valid_traits <- ls(test_for)
+	test_for
 
 } )()
