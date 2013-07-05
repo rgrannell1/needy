@@ -102,8 +102,9 @@ trait_tests <- ( function () {
 
 			( is.vector(value) || is.pairlist(value) ) &&
 			!is.expression(value) &&
-			(length(value) == 0 || 
-				all(nchar(names(value)) > 0))
+			(length(value) == 0 || (
+				!is.null(names(value)) &&
+				all(nchar(names(value)) > 0)))
 		}
 	test_for$boolean =
 		function (value) {

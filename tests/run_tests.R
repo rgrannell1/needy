@@ -6,6 +6,8 @@ all_patterns <- function (x) {
 	# get every permutation of elements in x,
 	# collapse them with |.
 
+	stopifnot (length(x) < 6)
+
 	permutations <- sapply(
 		combinat::permn(x),
 		function (perm) {

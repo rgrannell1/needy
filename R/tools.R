@@ -1,11 +1,7 @@
 
-#' @export
-
 deparse_to_string <- function (x) {
 	paste0(deparse(x), collapse = "")
 }
-
-#' @export
 
 stopf <- function (string, ...) {
 	string <- paste0(string, collapse = '')
@@ -20,4 +16,6 @@ warningf <- function (string, ...) {
 	warning(gettextf(string, ...), call.=FALSE)
 }
 
-"%throws%" = function (a, b) if (a) b
+is_boolean <- function (x) {
+	is.logical(x) && !is.na(x)
+}

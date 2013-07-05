@@ -1,20 +1,46 @@
 \name{needs_a}
+\alias{implemented_traits}
 \alias{needs_a}
 \title{ensure a value has a desired set of traits.}
 \usage{
   needs_a(traits, value, pcall = NULL)
+
+  implemented_traits()
 }
 \arguments{
   \item{traits}{a character vector, with each element being
   a space-seperated string of properties to test the value
   for. See "traits". required.}
 
+  \item{value}{an arbitrary R object to test for certain
+  properties. required.}
+
   \item{pcall}{an call or string that provides the call to
   be displayed when an error is thrown by needs_a. See
-  details. optional.}
+  details. optional, defaults to displaying the call to
+  needs_a().}
 }
 \description{
   ensure a value has a desired set of traits.
+}
+\details{
+  the option \code{pcall} is included so that it is
+  possible to customise where the errors seem to originate
+  from. for example,
+
+  \code{myfunc <- function (x) needs_a("integer", x,
+  sys.call( sys.parent(1) )) }
+
+  will display the following if called with a string "a":
+
+  \code{Error:myfunc("a"): the value "a" didn't ...}'
+
+  In this example, the user-facing function myfun is shown
+  to throw the error, making debugging easier. For cases in
+  which working with the call stack directly
+  (\code{sys.call()}) is too difficult a string can be
+  passed to \code{pcall}, and this string is printed in
+  front of the error message
 }
 \section{Traits}{
   The \code{traits} parameter is a character vector of

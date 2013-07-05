@@ -44,12 +44,27 @@
 #' \code{Error: needs_a(c("length_one list", "null"), 1): the value 1 didn't match any of the following compound traits:
 #'			length_one and list, or null'}
 #'
+#' @details the option \code{pcall} is included so that it is possible to customise where the errors seem to originate from.
+#' for example,
+#'
+#'\code{myfunc <- function (x) needs_a("integer", x, sys.call( sys.parent(1) )) }
+#'
+#' will display the following if called with a string "a":
+#'
+#' \code{Error:myfunc("a"): the value "a" didn't ...}'
+#' 
+#' In this example, the user-facing function myfun is shown to throw the error, making debugging easier. For cases in which
+#' working with the call stack directly (\code{sys.call()}) is too difficult
+#' a string can be passed to \code{pcall}, and this string is printed
+#' in front of the error message
+#'
 #' @param traits a character vector, with each element being a space-seperated
 #' string of properties to test the value for. See "traits". required.
-#' @value an arbitrary R object to test for certain properties. required.
+#' @param value an arbitrary R object to test for certain properties. required.
 #' @param pcall an call or string that provides the call to be 
-#' displayed when an error is thrown by needs_a. See details. optional.
+#' displayed when an error is thrown by needs_a. See details. optional, defaults to displaying the call to needs_a().
 #' @export
+#' @rdname needs_a
 
 needs_a <- function (traits, value, pcall = NULL) {
 	# test if the value has the required traits,
@@ -88,6 +103,17 @@ needs_a <- function (traits, value, pcall = NULL) {
 				pcall
 			),
 			value, pcall)
+}
+
+#' @export
+#' @rdname needs_a
+
+implemented_traits <- function () {
+	# print all traits available in the current version
+
+	cat('currently implemented traits:\n',
+		paste0(trait_tests$valid_traits, collapse = ", ")
+	)
 }
 
 report <- list(
