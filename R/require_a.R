@@ -51,9 +51,13 @@
 #'
 #' will display the following if called with a string "a":
 #'
-#' \code{Error:myfunc("a"): the value "a" didn't ...}'
+#' \code{Error: myfunc("a"): 
+#'				the value "a" didn\'t match any of the following compound traits:
+#'				integer}
+#'
 #' 
-#' In this example, the user-facing function myfun is shown to throw the error, making debugging easier. For cases in which
+#' In this example, the user-facing function \code{myfun} is shown to throw the error rather than an obscure inner function,
+#' making debugging easier. For cases in which
 #' working with the call stack directly (\code{sys.call()}) is too difficult
 #' a string can be passed to \code{pcall}, and this string is printed
 #' in front of the error message
@@ -65,6 +69,7 @@
 #' displayed when an error is thrown by require_a. See details. optional, defaults to displaying the call to require_a().
 #' @export
 #' @rdname require_a
+#' @example inst/examples/example-require_a.R
 
 require_a <- function (traits, value, pcall = NULL) {
 	# test if the value has the required traits,
@@ -265,7 +270,7 @@ check_traits <- function (trait_vector, value, pcall) {
 			pcall, warning, 
 			inputs = list(
 				value = value,
-				trait = subtrait))
+				trait = trait))
 	}
 
 	for (compound_trait in trait_vector) {

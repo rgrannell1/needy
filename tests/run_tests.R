@@ -1,6 +1,5 @@
 
 library(testthat)
-library(itertools)
 
 all_patterns <- function (x) {
 	# get every permutation of elements in x,

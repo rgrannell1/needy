@@ -33,14 +33,15 @@
 
   will display the following if called with a string "a":
 
-  \code{Error:myfunc("a"): the value "a" didn't ...}'
+  \code{Error: myfunc("a"): the value "a" didn\'t match any
+  of the following compound traits: integer}
 
-  In this example, the user-facing function myfun is shown
-  to throw the error, making debugging easier. For cases in
-  which working with the call stack directly
-  (\code{sys.call()}) is too difficult a string can be
-  passed to \code{pcall}, and this string is printed in
-  front of the error message
+  In this example, the user-facing function \code{myfun} is
+  shown to throw the error rather than an obscure inner
+  function, making debugging easier. For cases in which
+  working with the call stack directly (\code{sys.call()})
+  is too difficult a string can be passed to \code{pcall},
+  and this string is printed in front of the error message
 }
 \section{Traits}{
   The \code{traits} parameter is a character vector of
@@ -92,5 +93,25 @@
   \code{Error: require_a(c("length_one list", "null"), 1):
   the value 1 didn't match any of the following compound
   traits: length_one and list, or null'}
+}
+\examples{
+
+safeMap <- function (f, x) {
+	# map, with verification by require_a
+
+	pcall <- "safeMap(f, x)"
+	require_a('unary function', f, pcall)
+	require_a('listy', x)
+
+	Map(f, x)
+}
+
+safeSum <- function (a, b) {
+
+	require_a( "finite numeric", a, sys.call(sys.parent()) )
+	require_a( "finite numeric", b, sys.call(sys.parent()) )
+
+	a + b
+}
 }
 

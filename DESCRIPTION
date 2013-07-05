@@ -10,13 +10,14 @@ Description: needy is a small utility library designed to make testing function
 Version: 0.1
 Depends:
     R (>= 2.14.0)
-Date: 2013-02-03
+Date: 2013-06-05
 Author: Ryan Grannell
 Maintainer: Ryan Grannell <r.grannell2@gmail.com>
 Contact: Ryan Grannell <r.grannell2@gmail.com>
 BugReports: <r.grannell2@gmail.com>
 Suggests:
-    testthat
+    testthat,
+    combinat
 License: MIT
 Collate:
     'require_a.R'
