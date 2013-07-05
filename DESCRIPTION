@@ -23,3 +23,4 @@ Collate:
     'tools.R'
     'tools_forall.R'
     'trait_tests.R'
+    'generators.R'
