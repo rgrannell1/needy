@@ -1,9 +1,9 @@
-\name{needs_a}
+\name{require_a}
 \alias{implemented_traits}
-\alias{needs_a}
+\alias{require_a}
 \title{ensure a value has a desired set of traits.}
 \usage{
-  needs_a(traits, value, pcall = NULL)
+  require_a(traits, value, pcall = NULL)
 
   implemented_traits()
 }
@@ -16,9 +16,9 @@
   properties. required.}
 
   \item{pcall}{an call or string that provides the call to
-  be displayed when an error is thrown by needs_a. See
+  be displayed when an error is thrown by require_a. See
   details. optional, defaults to displaying the call to
-  needs_a().}
+  require_a().}
 }
 \description{
   ensure a value has a desired set of traits.
@@ -28,7 +28,7 @@
   possible to customise where the errors seem to originate
   from. for example,
 
-  \code{myfunc <- function (x) needs_a("integer", x,
+  \code{myfunc <- function (x) require_a("integer", x,
   sys.call( sys.parent(1) )) }
 
   will display the following if called with a string "a":
@@ -79,17 +79,17 @@
   If a test corresponding to an atomic trait is not found,
   an error is thrown:
 
-  \code{needs_a("white-whale", 1)}
+  \code{require_a("white-whale", 1)}
 
-  \code{Error: needs_a("white-whale", 1): unrecognised
+  \code{Error: require_a("white-whale", 1): unrecognised
   trait(s): (white-whale)}
 
   similarily, if a value doesn't have any other desired
   compound traits then an error is thrown:
 
-  \code{needs_a(c("length_one list", "null"), 1)}
+  \code{require_a(c("length_one list", "null"), 1)}
 
-  \code{Error: needs_a(c("length_one list", "null"), 1):
+  \code{Error: require_a(c("length_one list", "null"), 1):
   the value 1 didn't match any of the following compound
   traits: length_one and list, or null'}
 }

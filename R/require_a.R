@@ -33,21 +33,21 @@
 #'
 #' If a test corresponding to an atomic trait is not found, an error is thrown:
 #'
-#' \code{needs_a("white-whale", 1)}
+#' \code{require_a("white-whale", 1)}
 #'
-#' \code{Error: needs_a("white-whale", 1): unrecognised trait(s): (white-whale)}
+#' \code{Error: require_a("white-whale", 1): unrecognised trait(s): (white-whale)}
 #'
 #' similarily, if a value doesn't have any other desired compound traits then an error is thrown: 
 #'
-#' \code{needs_a(c("length_one list", "null"), 1)}
+#' \code{require_a(c("length_one list", "null"), 1)}
 #'
-#' \code{Error: needs_a(c("length_one list", "null"), 1): the value 1 didn't match any of the following compound traits:
+#' \code{Error: require_a(c("length_one list", "null"), 1): the value 1 didn't match any of the following compound traits:
 #'			length_one and list, or null'}
 #'
 #' @details the option \code{pcall} is included so that it is possible to customise where the errors seem to originate from.
 #' for example,
 #'
-#'\code{myfunc <- function (x) needs_a("integer", x, sys.call( sys.parent(1) )) }
+#'\code{myfunc <- function (x) require_a("integer", x, sys.call( sys.parent(1) )) }
 #'
 #' will display the following if called with a string "a":
 #'
@@ -62,11 +62,11 @@
 #' string of properties to test the value for. See "traits". required.
 #' @param value an arbitrary R object to test for certain properties. required.
 #' @param pcall an call or string that provides the call to be 
-#' displayed when an error is thrown by needs_a. See details. optional, defaults to displaying the call to needs_a().
+#' displayed when an error is thrown by require_a. See details. optional, defaults to displaying the call to require_a().
 #' @export
-#' @rdname needs_a
+#' @rdname require_a
 
-needs_a <- function (traits, value, pcall = NULL) {
+require_a <- function (traits, value, pcall = NULL) {
 	# test if the value has the required traits,
 	# if it doesn't throw a helpful error. decorate with 
 	# pcall so the error will look like it came from the user's 
@@ -106,7 +106,7 @@ needs_a <- function (traits, value, pcall = NULL) {
 }
 
 #' @export
-#' @rdname needs_a
+#' @rdname require_a
 
 implemented_traits <- function () {
 	# print all traits available in the current version

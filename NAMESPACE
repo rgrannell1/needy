@@ -1,2 +1,2 @@
 export(implemented_traits)
-export(needs_a)
+export(require_a)

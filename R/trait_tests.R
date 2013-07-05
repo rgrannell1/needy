@@ -2,7 +2,7 @@
 trait_tests <- ( function () { 
 	# create an environment containing trait-
 	# testing functions, for speed of access.
-	# needs_a checks traits using this environment as a 
+	# require_a checks traits using this environment as a 
 	# hash table.
 
 	test_for <- new.env(
