@@ -1,4 +1,3 @@
-
 needy
 ======
 
@@ -52,16 +51,17 @@ the R documentation ```?require_a``` for more detailed usage information.
 ### Alternatives
 
 I wrote needy because it fits a use case I have very tidely; I have 
-two large libraries (mchof and arrow, for those who are intested), and I needed
+two large libraries (mchof and arrow, for those who are interested), and I needed
 a way of reducing the amount of ```if (is.function(f)) stop()` boilerplate code,
 and of standardising error messages. Needy ticks both boxes. Over times I will improve
-this library substantially, but if this library doesn't fit your needs I recommend:
+this library substantially, but if this library doesn't fit your needs at the moment I recommend:
 
-[https://github.com/hadley/assertthat](assertthat)
-[http://cran.r-project.org/web/packages/assertive/index.html](assertive)
+* [https://github.com/hadley/assertthat](assertthat)
+* [http://cran.r-project.org/web/packages/assertive/index.html](assertive)
 
 Assertive is currently the more mature of the two libraries, and falls more into
-the category of data validation (checking if data are email addresses, hex colours, ...).
+the category of data validation (checking if data are email addresses, hex colours, ...). Assertthat
+seems to be more general, but it isn't available on CRAN currently (July 5th 2013).
 
 ### License
 
@@ -86,12 +86,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-
-
-
-
-
 
 ### Footnotes
 
