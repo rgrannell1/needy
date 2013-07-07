@@ -1,0 +1,5 @@
+Version 0.1.1
+--------------------------------------------------------------------
+
+Bug Fixes: The errors of missing argument 'traits' or 'value' now correctly
+reports which argument is missing

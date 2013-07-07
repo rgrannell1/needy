@@ -127,12 +127,12 @@ report <- list(
 	missing_traits = function (pcall) {
 
 		stopf (
-			"%s: the parameter 'value' was missing but is required\n", 
+			"%s: the parameter 'traits' was missing but is required\n", 
 			pcall)
 	},
 	missing_value = function (pcall) {
 		stopf (
-			"%s: the parameter 'traits' was missing but is required\n", 
+			"%s: the parameter 'value' was missing but is required\n", 
 			pcall)
 	},
 	traits_not_character = function (pcall, traits) {
