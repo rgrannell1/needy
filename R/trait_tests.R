@@ -67,6 +67,12 @@ trait_tests <- ( function () {
 	test_for$vector = is.vector
 
 	# tests I find useful
+	test_for$functionable = 
+		function (value) {
+			(is.character(value) && length(value) == 1) ||
+			is.function(value) ||
+			is.symbol(value)
+		}
 	test_for$false = 
 		function (value) {
 			is.logical(value) && !is.na(value) && !value
