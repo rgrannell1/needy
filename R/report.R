@@ -13,12 +13,7 @@ report <- list(
 		stopf (
 			"%s: the parameter 'value' was missing but is required\n", 
 			pcall)
-	},
-	missing_rules = function (pcall) {
-		stopf (
-			"%s: the parameter 'rules' was missing but is required\n", 
-			pcall)
-	},
+	}
 	traits_not_character = function (pcall, traits) {
 		stopf (
 			"%s: the parameter 'traits' must be a character vector\n
@@ -32,14 +27,6 @@ report <- list(
 			actual class was %s
 			", 
 			pcall, paste0(class(inputs), collapse = ", "))
-		)
-	},
-	rules_not_list = function (pcall, rules) {
-		stopf(
-			"%s: the parameter 'rules' must be a list\n
-			actual class was %s
-			", 
-			pcall, paste0(class(rules), collapse = ", "))
 		)
 	},
 	invalid_traits = function (pcall, invalid) {

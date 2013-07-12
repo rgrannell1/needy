@@ -1,6 +1,11 @@
 
 deparse_to_string <- function (x) {
-	paste0(deparse(x), collapse = "")
+
+	if (is.missing(x)) {
+		""
+	} else {
+		paste0(deparse(x), collapse = "")
+	}	
 }
 
 stopf <- function (string, ...) {
