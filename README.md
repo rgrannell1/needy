@@ -20,7 +20,7 @@ invalid inputs when defining a function, by defining what types of inputs it
 It is only well defined if f is a binary (or variadic) function, and x is a list,
 a vector, or a pairlist. [1]
 
-```
+```javascript
 safeIndMap <- function (f, x) {
 	
 	pcall <- sys.call(sys.parent())
@@ -35,7 +35,7 @@ If ```safeIndMap``` is now called with a three-variable function, a descriptive 
 showing the three-variable function. This error says that it was triggered by the fact
 that f wasn't a binary function, which is a pretty clear error message.
 
-```
+```javascript
 safeIndMap( function (a, b, c) a+b+c, 1:10 )
 
 Error: safeIndMap(function(a, b, c) a + b + c, 1:10): 
@@ -56,8 +56,8 @@ a way of reducing the amount of ```if (is.function(f)) stop()` boilerplate code,
 and of standardising error messages. Needy ticks both boxes. Over times I will improve
 this library substantially, but if this library doesn't fit your needs at the moment I recommend:
 
-* [https://github.com/hadley/assertthat](assertthat)
-* [http://cran.r-project.org/web/packages/assertive/index.html](assertive)
+* [assertthat](https://github.com/hadley/assertthat)
+* [assertive](http://cran.r-project.org/web/packages/assertive/index.html)
 
 Assertive is currently the more mature of the two libraries, and falls more into
 the category of data validation (checking if data are email addresses, hex colours, ...). Assertthat
