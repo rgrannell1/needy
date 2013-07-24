@@ -11,7 +11,7 @@ test_that(
 		pcall <- 'this is a call'
 		traits <- c("trait one", "trait two")
 		invalid <- "white-elephant"
-		inputs <- list( value = 10000, trait = "string" )
+		inputs <- list(value = 10000, trait = "string")
 		actual <- "actual-value"
 		value  <- "this is a value"
 		error <- list(message = "I am an error message")
@@ -22,30 +22,26 @@ test_that(
 
 		expect_error(
 			report$traits_not_character(pcall, traits),
-			pcall, traits)
+			pcall)
 
 		expect_error(
 			report$invalid_traits(pcall, invalid),
-			all_patterns(c(pcall, invalid)) )
+			pcall)
 
 		expect_error(
 			report$non_boolean(pcall, inputs, actual),
-			all_patterns(c(pcall, inputs$value, inputs$trait, actual)) )
+			pcall)
 
 		expect_error(
 			report$no_match(pcall, value, traits),
-			all_patterns(c(pcall, value, traits)) )
+			pcall)
 
 		expect_error(
 			report$error_encountered(pcall, error, inputs),
-			all_patterns(c(
-				pcall, error,
-				inputs$value, inputs$trait)) )
+			pcall)
 
 		expect_error(
 			report$warning_encountered(pcall, error, inputs),
-			all_patterns(c(
-				pcall, error,
-				inputs$value, inputs$trait)) )
+			pcall)
 	}
 )
