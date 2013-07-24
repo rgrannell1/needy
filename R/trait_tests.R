@@ -165,7 +165,7 @@ trait_tests <- ( function () {
 
 	test_for$nullary = 
 		function (value) {
-			!is.function (value) || {
+			!is.function(value) || {
 				params <- xParams(value)
 
 				"..." %in% names(params) ||
@@ -183,7 +183,7 @@ trait_tests <- ( function () {
 		}
 	test_for$binary =
 		function (value) {
-			!is.function (value) || {
+			!is.function(value) || {
 				params <- xParams(value)
 
 				"..." %in% names(params) ||
@@ -192,7 +192,7 @@ trait_tests <- ( function () {
 		}
 	test_for$ternary = 
 		function (value) {
-			!is.function (value) || {
+			!is.function(value) || {
 				params <- xParams(value)
 
 				"..." %in% names(params) ||
@@ -203,8 +203,10 @@ trait_tests <- ( function () {
 	test_for$valid_traits <- ls(test_for)
 	test_for$variadic =
 		function (value) {
-			params <- xParams(value)
-			"..." %in% names(params)
+			!is.function(value) || {
+				params <- xParams(value)
+				"..." %in% names(params)				
+			}
 		}
 	test_for
 
