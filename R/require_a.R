@@ -77,10 +77,6 @@ require_a <- function (traits, value, pcall = NULL) {
 	# pcall so the error will look like it came from the user's 
 	# function of choice.
 
-	force(traits)
-	force(value)
-	force(pcall)
-
 	valid_pcall <- 
 		!is.null(pcall) && (
 		is.character(pcall) ||
@@ -91,6 +87,22 @@ require_a <- function (traits, value, pcall = NULL) {
 	} else {
 		deparse_to_string( sys.call() )
 	}
+
+	tryCatch(
+	    { force(traits) },
+	    error = function (error) {
+	        stop(paste0(pcall, ": ", error$message), call. = FALSE)
+	})
+	tryCatch(
+	    { force(value) },
+	    error = function (error) {
+	        stop(paste0(pcall, ": ", error$message), call. = FALSE)
+	})
+	tryCatch(
+	    { force(pcall) },
+	    error = function (error) {
+	        stop(paste0(pcall, ": ", error$message), call. = FALSE)
+	})
 
 	if (missing(value)) {
 		report$missing_value(pcall)
@@ -124,7 +136,6 @@ implemented_traits <- function () {
 		paste0(trait_tests$valid_traits, collapse = ", ")
 	)
 }
-
 
 validate_traits <- function (trait_string, pcall) {
 	# takes the raw traits string, and 
@@ -198,7 +209,6 @@ check_traits <- function (trait_vector, value, pcall) {
 							trait = trait),
 						actual = trait_matched)
 				}
-				
 				trait_matched
 				},
 				error = error_handler,

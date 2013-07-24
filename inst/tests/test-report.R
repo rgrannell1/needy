@@ -16,8 +16,6 @@ test_that(
 		value  <- "this is a value"
 		error <- list(message = "I am an error message")
 
-
-
 		expect_error(report$missing_traits(pcall), pcall)
 
 		expect_error(report$missing_value(pcall), pcall)

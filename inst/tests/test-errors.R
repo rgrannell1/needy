@@ -5,6 +5,8 @@ test_that("valid errors are triggered where expected (+ group)", {
 
 	pcall <- "this shows that the expected error was thrown"
 
+	expect_error(require_a(), "missing")
+
 	expect_error(
 		require_a(value = 1, pcall = pcall), pcall
 	)
