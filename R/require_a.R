@@ -71,13 +71,15 @@
 #' @rdname require_a
 #' @example inst/examples/example-require_a.R
 
-# WARNING NEED TO FIX PROMISE EVALUTATION
-
 require_a <- function (traits, value, pcall = NULL) {
 	# test if the value has the required traits,
 	# if it doesn't throw a helpful error. decorate with 
 	# pcall so the error will look like it came from the user's 
 	# function of choice.
+
+	force(traits)
+	force(value)
+	force(pcall)
 
 	valid_pcall <- 
 		!is.null(pcall) && (
@@ -148,10 +150,6 @@ validate_traits <- function (trait_string, pcall) {
 				report$invalid_traits(pcall, invalid)
 			}
 	})
-}
-
-is_boolean <- function (x) {
-	is.logical(x) && !is.na(x)
 }
 
 check_traits <- function (trait_vector, value, pcall) {

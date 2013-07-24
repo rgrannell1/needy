@@ -1,7 +1,7 @@
 
 deparse_to_string <- function (x) {
 
-	if (is.missing(x)) {
+	if (missing(x)) {
 		""
 	} else {
 		paste0(deparse(x), collapse = "")
