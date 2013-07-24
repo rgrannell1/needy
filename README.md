@@ -45,8 +45,14 @@ Error: safeIndMap(function(a, b, c) a + b + c, 1:10):
 We can be fairly confident now that if the user passes incorrect input to safeIndMap they 
 should be able to figure out what went wrong quickly. 
 
-For a full list of implemented traits, use the aptly named ```implemented_traits()```. See
-the R documentation ```?require_a``` for more detailed usage information.
+For a full list of implemented traits, use the aptly named ```implemented_traits()```. As of version
+0.1.1, the following traits are implemented.
+
+```javascript
+currently implemented traits:
+ any, array, atomic, binary, boolean, call, character, closure, complex, data.frame, double, environment, expression, factor, false, finite, function, functionable, infinite, integer, language, length_one, length_three, length_two, length_zero, list, listy, logical, matrix, na, name, named, nan, nonnegative, null, nullary, numeric, object, pairlist, positive, primitive, raw, recursive, s4, string, symbol, table, ternary, true, unary, variadic, vector, whole
+```
+See the R documentation ```?require_a``` for more detailed usage information.
 
 ### Alternatives
 

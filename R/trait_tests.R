@@ -200,7 +200,6 @@ trait_tests <- ( function () {
 			}
 		}
 
-	test_for$valid_traits <- ls(test_for)
 	test_for$variadic =
 		function (value) {
 			!is.function(value) || {
@@ -208,6 +207,8 @@ trait_tests <- ( function () {
 				"..." %in% names(params)				
 			}
 		}
+
+	test_for$valid_traits <- ls(test_for)
 	test_for
 
 } )()
