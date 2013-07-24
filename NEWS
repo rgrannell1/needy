@@ -1,8 +1,14 @@
 Version 0.1.1
 --------------------------------------------------------------------
 
-Features: added a 'functionable' test; tests if the value can be
-used by match.fun( )
+Features: 
+added a 'functionable' test; tests if the value can be
+used by match.fun( ).
 
-Bug Fixes: The errors of missing argument 'traits' or 'value' now correctly
-reports which argument is missing
+Bug Fixes: 
+The errors of missing argument 'traits' or 'value' now correctly
+reports which argument is missing.
+
+A clearer error is given when arguments are not given to require_a.
+
+

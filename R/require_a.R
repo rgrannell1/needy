@@ -194,8 +194,7 @@ check_traits <- function (trait_vector, value, pcall) {
 			# member in this group of traits 
 			
 			trait_matched <- tryCatch({
-				# testing the value is risky, 
-				# so do it in a trycatch
+				# testing the value is risky, so do it in a trycatch
 
 				has_trait <- trait_tests[[trait]]
 				trait_matched <- has_trait(value)
@@ -215,9 +214,8 @@ check_traits <- function (trait_vector, value, pcall) {
 				warning = warning_handler
 			)
 				
+			# short-circuit group if the member didn't match
 			if (!trait_matched) {
-				# short-circuit group if the member didn't match
-
 				compound_trait_matched <- FALSE
 				break
 			}

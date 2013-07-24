@@ -33,7 +33,6 @@ test_that("errors aren't thrown for valid inputs (-)", {
 
 	require_a("integer", 2L, "myfunc(x)")
 	require_a("integer", 2L, call('mean', 1,2))
-
 })
 
 context("no_match needs more validation")

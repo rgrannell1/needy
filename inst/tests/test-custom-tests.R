@@ -87,6 +87,17 @@ test_that("named works", {
 	expect_false( f(10) )
 })
 
+test_that("functionable works", {
+
+	f <- trait_tests$functionable
+
+	expect_true( f("a") )
+	expect_true( f(as.symbol("a")) )
+	expect_true( f(mean) )
+	expect_false( f(1) )
+	expect_false( f(list(1, 2, 3)) )
+
+})
 
 test_that("boolean works", {
 
@@ -141,7 +152,6 @@ test_that("nullary works", {
 	expect_false(f(function (x, y) x))
 
 })
-
 
 test_that("unary works", {
 

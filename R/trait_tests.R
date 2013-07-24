@@ -160,7 +160,8 @@ trait_tests <- ( function () {
 		}
 	}
 
-	# check function arity. variadic is always the desired arity
+	# check function arity. variadic is always
+	# the desired arity
 
 	test_for$nullary = 
 		function (value) {
