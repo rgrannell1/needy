@@ -153,7 +153,8 @@ validate_traits <- function (trait_string, pcall) {
 			traits <- strsplit(compound_trait, split = delimiter)[[1]]
 			invalid <- setdiff(
 				traits, 
-				trait_tests$valid_traits)
+				c(trait_tests$valid_traits, 
+				paste0("!", trait_tests$valid_traits)) )
 
 			if (length(invalid) == 0) {
 				traits
@@ -196,7 +197,12 @@ check_traits <- function (trait_vector, value, pcall) {
 			trait_matched <- tryCatch({
 				# testing the value is risky, so do it in a trycatch
 
-				has_trait <- trait_tests[[trait]]
+				has_trait <- if (substring(trait, 1, 1) == "!") {
+					trait_tests[[ substring(trait, 2) ]]
+				} else {
+					trait_tests[[trait]]
+				}
+
 				trait_matched <- has_trait(value)
 
 				if (!is_boolean(trait_matched)) {
@@ -208,7 +214,12 @@ check_traits <- function (trait_vector, value, pcall) {
 							trait = trait),
 						actual = trait_matched)
 				}
-				trait_matched
+
+				if (substring(trait, 1, 1) == "!") {
+					!trait_matched
+				} else {
+					trait_matched
+				}
 				},
 				error = error_handler,
 				warning = warning_handler
