@@ -45,6 +45,20 @@ Error: safeIndMap(function(a, b, c) a + b + c, 1:10):
 We can be fairly confident now that if the user passes incorrect input to safeIndMap they 
 should be able to figure out what went wrong quickly. 
 
+Sometimes is it more convenient to give a trait a value *cannot* have. For this reason
+(as of version 0.2) traits can be negated.
+
+```javascript
+safeNotNull <- function (x) {
+	
+	pcall <-sys.call()
+	require_a("!null", x, pcall)
+	X
+}
+```
+
+
+
 For a full list of implemented traits, use the aptly named ```implemented_traits()```. See
 the R documentation ```?require_a``` for more detailed usage information.
 
