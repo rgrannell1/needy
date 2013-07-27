@@ -103,5 +103,13 @@ report <- list(
 			stopf(text,
 				pcall, readable$value,
 				inputs$trait, warning$message)
+		},
+	trait_overwrote = 
+		function (pcall, name) {
+
+			text <- "%s:\n the trait '%s' already exists: overwriting.\n"
+
+			warningf(text,
+				pcall, name)
 		}
 )

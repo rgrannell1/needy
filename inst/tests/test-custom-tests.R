@@ -162,4 +162,13 @@ test_that("unary works", {
 
 })
 
+test_that("variadic works", {
+
+	f <- trait_tests$variadic
+	expect_true(f( function (...) x))
+	expect_false(f(function (x, y) x))
+	expect_true(f(function (x, ...) x))
+
+})
+
 

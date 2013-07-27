@@ -1,5 +1,5 @@
 
-context ("require_a reports errors correctly")
+context("require_a reports errors correctly")
 
 test_that("valid errors are triggered where expected (+ group)", {
 
@@ -8,20 +8,21 @@ test_that("valid errors are triggered where expected (+ group)", {
 	expect_error(require_a(), "missing")
 
 	expect_error(
-		require_a(value = 1, pcall = pcall), pcall
-	)
+		require_a(value = 1, pcall = pcall), pcall)
 	expect_error(
-		require_a(traits = "integer", pcall), pcall
-	)
+		require_a(traits = "integer", pcall), pcall)
 	expect_error(
-		require_a(traits = list(), 1, pcall), pcall
-	)
+		require_a(traits = list(), 1, pcall), pcall)
 	expect_error(
-		require_a("white-elephant", 1, pcall), pcall
-	)
+		require_a("white-elephant", 1, pcall), pcall)
 	expect_error(
-		require_a("positive integer", 'string', pcall), pcall
-	)
+		require_a("positive integer", 'string', pcall), pcall)
+
+	expect_error(
+		require_a("!null", NULL, pcall), pcall)
+	expect_error(
+		require_a(c("null", "!unary function"), function (a) a, pcall), pcall)
+
 })
 
 test_that("errors aren't thrown for valid inputs (-)", {
@@ -33,6 +34,10 @@ test_that("errors aren't thrown for valid inputs (-)", {
 
 	require_a("integer", 2L, "myfunc(x)")
 	require_a("integer", 2L, call('mean', 1,2))
+
+	require_a("!null", 2L, ">_<")
+	require_a(c("null", "!unary function"), function (a, b) a+b, "unary()")
+
 })
 
 context("no_match needs more validation")

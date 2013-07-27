@@ -11,8 +11,27 @@ safeMap <- function (f, x) {
 
 safeSum <- function (a, b) {
 
-	require_a( "finite numeric", a, sys.call(sys.parent()) )
-	require_a( "finite numeric", b, sys.call(sys.parent()) )
+	pcall <- sys.call()
+	require_a("finite numeric", a, pcall)
+	require_a("finite numeric", b, pcall)
 
 	a + b
+}
+
+definitelyNotNull <- function (x) {
+
+	pcall <- sys.call()
+	require_a("!null", x, pcall)
+
+	x
+}
+
+safeMatchFun <- function (f) {
+	# match.fun with arg checking
+
+	pcall <- sys.call()
+	require_a(c("string", "function", "symbol"), f, pcall)
+	require_a("functionable") #my prefered shorthand for the above
+
+	match.fun(f)
 }

@@ -1,5 +1,5 @@
 
-#' ensure a value has a desired set of traits. 
+#' Ensure a value has a desired set of traits. 
 #'
 #' @section Traits:
 #'
@@ -44,6 +44,13 @@
 #' \code{Error: require_a(c("length_one list", "null"), 1): the value 1 didn't match any of the following compound traits:
 #'			length_one and list, or null'}
 #'
+#' As of version 0.2 trait negation is also supported:
+#'
+#' \code{require_a("!null", NULL)}
+#'
+#' \code{Error: require_a("!null", NULL): the value NULL didn't match any of the following compound traits:
+#'			!null'}
+#'
 #' @details the option \code{pcall} is included so that it is possible to customise where the errors seem to originate from.
 #' for example,
 #'
@@ -54,7 +61,6 @@
 #' \code{Error: myfunc("a"): 
 #'				the value "a" didn\'t match any of the following compound traits:
 #'				integer}
-#'
 #' 
 #' In this example, the user-facing function \code{myfun} is shown to throw the error rather than an obscure inner function,
 #' making debugging easier. For cases in which
@@ -72,10 +78,11 @@
 #' @example inst/examples/example-require_a.R
 
 require_a <- function (traits, value, pcall = NULL) {
-	# test if the value has the required traits,
-	# if it doesn't throw a helpful error. decorate with 
-	# pcall so the error will look like it came from the user's 
-	# function of choice.
+	" character -> a -> call|string -> boolean
+	  test if the value has the required traits,
+	  if it doesn't throw a helpful error. decorate with 
+	  pcall so the error will look like it came from the user's 
+	  function of choice."
 
 	valid_pcall <- 
 		!is.null(pcall) && (
@@ -126,21 +133,12 @@ require_a <- function (traits, value, pcall = NULL) {
 			value, pcall)
 }
 
-#' @export
-#' @rdname require_a
-
-implemented_traits <- function () {
-	# print all traits available in the current version
-
-	cat('currently implemented traits:\n',
-		paste0(trait_tests$valid_traits, collapse = ", ")
-	)
-}
 
 validate_traits <- function (trait_string, pcall) {
-	# takes the raw traits string, and 
-	# transforms it into a list of
-	# trait groups to test
+	"character -> call -> [character]
+	 takes the raw traits string, and 
+	 transforms it into a list of
+	 trait groups to test"
 	
 	delimiter <- '[ \t\n\r]+'
 
@@ -165,9 +163,9 @@ validate_traits <- function (trait_string, pcall) {
 }
 
 check_traits <- function (trait_vector, value, pcall) {
-	# does the value have at least one 
-	# group of traits?
-	# if yes, return true. otherwise, throw a descriptive error.
+	"does the value have at least one 
+	 group of traits?
+	 if yes, return true. otherwise, throw a descriptive error."
 
 	error_handler <- function (error) {
 
@@ -240,4 +238,34 @@ check_traits <- function (trait_vector, value, pcall) {
 	# throw an error if no supertraits matched
 	compound_trait_matched ||report$no_match(
 		pcall, value, trait_vector)	
+}
+
+#' @export
+#' @rdname require_a
+
+implemented_traits <- function () {
+	"print all traits available in the current version"
+
+	cat('currently implemented traits:\n',
+		paste0(trait_tests$valid_traits, collapse = ", ")
+	)
+}
+
+#' @export
+#' @rdname require_a
+
+add_trait <- function (name, trait_test) {
+	"string -> (a -> boolean) -> null
+	add a new trait to the trait tests"
+
+	pcall <- sys.call()
+	require_a("string", name, pcall)
+	require_a("unary function", trait_test)
+
+	if (name %in% trait_tests$valid_traits) {
+		report$trait_overwrote(pcall, name)
+	}
+
+	trait_tests[[name]] <- trait_test
+	trait_tests$valid_traits <- ls(trait_tests)
 }

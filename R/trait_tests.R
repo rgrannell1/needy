@@ -199,7 +199,6 @@ trait_tests <- ( function () {
 				length(params) == 3
 			}
 		}
-
 	test_for$variadic =
 		function (value) {
 			!is.function(value) || {

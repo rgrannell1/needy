@@ -14,6 +14,7 @@ test_that(
 		inputs <- list(value = 10000, trait = "string")
 		actual <- "actual-value"
 		value  <- "this is a value"
+		name <- "cat"
 		error <- list(message = "I am an error message")
 
 		expect_error(report$missing_traits(pcall), pcall)
@@ -42,6 +43,9 @@ test_that(
 
 		expect_error(
 			report$warning_encountered(pcall, error, inputs),
+			pcall)
+		expect_warning(
+			report$trait_overwrote(pcall, name),
 			pcall)
 	}
 )
