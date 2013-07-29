@@ -53,7 +53,7 @@ currently implemented traits:
  any, array, atomic, binary, boolean, call, character, closure, complex, data.frame, double, environment, expression, factor, false, finite, function, functionable, infinite, integer, language, length_one, length_three, length_two, length_zero, list, listy, logical, matrix, na, name, named, nan, nonnegative, null, nullary, numeric, object, pairlist, positive, primitive, raw, recursive, s4, string, symbol, table, ternary, true, unary, variadic, vector, whole
 ```
 See the R documentation ```?require_a``` for more detailed usage information.
-=======
+
 Sometimes is it more convenient to give a trait a value *cannot* have. For this reason
 (as of version 0.2) traits can be negated.
 
