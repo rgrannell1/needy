@@ -22,6 +22,13 @@
   be displayed when an error is thrown by require_a. See
   details. optional, defaults to displaying the call to
   require_a().}
+
+  \item{name}{a string giving the name of the test to add.
+  required.}
+
+  \item{trait_test}{a unary function that returns a true or
+  false value.  This function should tests for a particular
+  trait.required.}
 }
 \description{
   Ensure a value has a desired set of traits.
@@ -88,7 +95,7 @@
   \code{Error: require_a("white-whale", 1): unrecognised
   trait(s): (white-whale)}
 
-  similarily, if a value doesn't have any other desired
+  Similarily, if a value doesn't have any other desired
   compound traits then an error is thrown:
 
   \code{require_a(c("length_one list", "null"), 1)}

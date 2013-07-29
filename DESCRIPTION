@@ -7,7 +7,7 @@ Description: needy is a small utility library designed to make testing function
     function, require_a( ), which lets you specify the traits an input object
     should have, such as class, size, numerical properties or number of
     parameters, while reducing boilerplate code and aiding debugging.
-Version: 0.1
+Version: 0.2
 Depends:
     R (>= 2.14.0)
 Date: 2013-06-05

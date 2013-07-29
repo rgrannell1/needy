@@ -1,4 +1,4 @@
-Version 0.1.1
+Version 0.2
 --------------------------------------------------------------------
 
 Features: 
@@ -7,6 +7,8 @@ used by match.fun( ).
 * added a 'variadic' test; tests if the function is variadic
 * added support for negation traits; "!string", "!unary function" and 
 c("!length_one string", "number") are now valid trait specifications.
+* added a function 'add_tests' that allows new trait tests to be added to 
+the environment containing trait tests.
 
 Bug Fixes: 
 * The errors of missing argument 'traits' or 'value' now correctly

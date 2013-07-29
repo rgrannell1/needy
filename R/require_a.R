@@ -37,7 +37,7 @@
 #'
 #' \code{Error: require_a("white-whale", 1): unrecognised trait(s): (white-whale)}
 #'
-#' similarily, if a value doesn't have any other desired compound traits then an error is thrown: 
+#' Similarily, if a value doesn't have any other desired compound traits then an error is thrown: 
 #'
 #' \code{require_a(c("length_one list", "null"), 1)}
 #'
@@ -69,10 +69,13 @@
 #' in front of the error message
 #'
 #' @param traits a character vector, with each element being a space-seperated
-#' string of properties to test the value for. See "traits". required.
+#'     string of properties to test the value for. See "traits". required.
 #' @param value an arbitrary R object to test for certain properties. required.
 #' @param pcall an call or string that provides the call to be 
-#' displayed when an error is thrown by require_a. See details. optional, defaults to displaying the call to require_a().
+#'     displayed when an error is thrown by require_a. See details. optional, defaults to displaying the call to require_a().
+#' @param name a string giving the name of the test to add. required.
+#' @param trait_test a unary function that returns a true or false value. 
+#'     This function should tests for a particular trait.required.
 #' @export
 #' @rdname require_a
 #' @example inst/examples/example-require_a.R
@@ -95,21 +98,19 @@ require_a <- function (traits, value, pcall = NULL) {
 		deparse_to_string( sys.call() )
 	}
 
+	force_error_handler <- function (error) {
+        stop(paste0(pcall, ": ", error$message), call. = FALSE)
+	}
+
 	tryCatch(
 	    { force(traits) },
-	    error = function (error) {
-	        stop(paste0(pcall, ": ", error$message), call. = FALSE)
-	})
+	    error = force_error_handler)
 	tryCatch(
 	    { force(value) },
-	    error = function (error) {
-	        stop(paste0(pcall, ": ", error$message), call. = FALSE)
-	})
+	    error = force_error_handler)
 	tryCatch(
 	    { force(pcall) },
-	    error = function (error) {
-	        stop(paste0(pcall, ": ", error$message), call. = FALSE)
-	})
+	    error = force_error_handler)
 
 	if (missing(value)) {
 		report$missing_value(pcall)
