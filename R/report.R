@@ -104,7 +104,7 @@ report <- list(
 				pcall, readable$value,
 				inputs$trait, warning$message)
 		},
-	trait_overwrote = 
+	trait_overridden = 
 		function (pcall, name) {
 
 			text <- "%s:\n the trait '%s' already exists: overwriting.\n"

@@ -257,14 +257,14 @@ implemented_traits <- function () {
 
 add_trait <- function (name, trait_test) {
 	"string -> (a -> boolean) -> null
-	add a new trait to the trait tests"
+	side-effectful. add a new trait to the trait tests"
 
 	pcall <- sys.call()
 	require_a("string", name, pcall)
 	require_a("unary function", trait_test)
 
 	if (name %in% trait_tests$valid_traits) {
-		report$trait_overwrote(pcall, name)
+		report$trait_overridden(pcall, name)
 	}
 
 	trait_tests[[name]] <- trait_test

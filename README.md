@@ -26,7 +26,6 @@ safeIndMap <- function (f, x) {
 	pcall <- sys.call()
 	require_a("binary function", f, pcall)
 	require_a(c("vector", "pairlist"), x)
-
 	Map(f, x, seq_along(x))
 }
 ```

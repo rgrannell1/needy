@@ -45,7 +45,7 @@ test_that(
 			report$warning_encountered(pcall, error, inputs),
 			pcall)
 		expect_warning(
-			report$trait_overwrote(pcall, name),
+			report$trait_overridden(pcall, name),
 			pcall)
 	}
 )
