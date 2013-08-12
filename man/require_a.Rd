@@ -1,5 +1,6 @@
 \name{require_a}
 \alias{add_trait}
+\alias{implemented_modifiers}
 \alias{implemented_traits}
 \alias{require_a}
 \title{Ensure a value has a desired set of traits.}
@@ -7,6 +8,8 @@
   require_a(traits, value, pcall = NULL)
 
   implemented_traits()
+
+  implemented_modifiers()
 
   add_trait(name, trait_test)
 }

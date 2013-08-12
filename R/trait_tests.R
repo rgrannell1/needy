@@ -11,6 +11,7 @@ trait_tests <- ( function () {
 	
 	# useful for testing purposes
 	test_for$any = function (value) TRUE
+	test_for$'*' = function (value) TRUE
 
 	# (mostly) builtin functions,
 	# tht mostly test the class of the object
@@ -209,5 +210,51 @@ trait_tests <- ( function () {
 
 	test_for$valid_traits <- ls(test_for)
 	test_for
+
+} )()
+
+
+trait_modifiers <- ( function () { 
+	# create an environment containing trait-test modifiers.
+	# these functions take trait tests, and modify them in some way.
+
+	modify_with <- new.env(
+		parent = emptyenv()
+	)
+	modify_with$'!' = 
+		function (test) {
+			function (value) {
+				!test(value)
+			}
+		}
+	modify_with$id_ = 
+		function (test) {
+			test
+		}
+	modify_with$list_of_ = 
+		function (test)  {
+			function (value) {
+
+				if (!is.list(value)) {
+					FALSE
+				} else {
+					all( unlist(lapply(value, test)) )
+				}
+			}
+		}
+	modify_with$pairlist_of_ = 
+		function (test)  {
+			function (value) {
+
+				if (!is.pairlist(value)) {
+					FALSE
+				} else {
+					all( unlist(lapply(value, test)) )
+				}
+			}
+		}
+
+	modify_with$valid_modifiers <- ls(modify_with)
+	modify_with
 
 } )()
