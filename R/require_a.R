@@ -81,11 +81,11 @@
 #' @example inst/examples/example-require_a.R
 
 require_a <- function (traits, value, pcall = NULL) {
-	" character -> a -> call|string -> boolean
-	  test if the value has the required traits,
-	  if it doesn't throw a helpful error. decorate with 
-	  pcall so the error will look like it came from the user's 
-	  function of choice."
+	# character -> a -> call|string -> boolean
+	# test if the value has the required traits,
+	# if it doesn't throw a helpful error. decorate with 
+	# pcall so the error will look like it came from the user's 
+	# function of choice."
 
 	valid_pcall <- 
 		!is.null(pcall) && (
@@ -126,7 +126,7 @@ require_a <- function (traits, value, pcall = NULL) {
 	# the value has at least one group of traits
 
 	(length(traits) == 0) ||
-		check_traits(
+		check_value(
 			parse_traits(
 				traits,
 				pcall
@@ -165,14 +165,15 @@ parse_traits <- function (trait_string, pcall) {
 	lapply(
 		trait_string,
 		function (compound_trait) {
-			# each element defines a compound_trait.
-			# split into traits and check them.
 
 			traits <- strsplit(compound_trait, split = whitespace)[[1]]
 
 			parsed_traits <- lapply(
 				traits, 
 				function (trait) {
+					# string -> [:modifier, :trait]
+					# split every trait into a modifier ((a -> boolean) -> (a -> boolean)) and
+					# a trait (a -> boolean).
 
 					modifier <- get_modifier(trait)
 
@@ -197,10 +198,10 @@ parse_traits <- function (trait_string, pcall) {
 				function (acc, parsed_trait) {
 					# test if modifier-less trait is implemented.
 
-					any_invalid <- parsed_trait$trait %in% 
-						trait_tests$valid_traits
+					is_invalid <- !(parsed_trait$trait %in% 
+						trait_tests$valid_traits)
 					c(acc, 
-						if (any_invalid) {
+						if (is_invalid) {
 							parsed_traits$trait
 						} else {
 							character(0)
@@ -219,7 +220,7 @@ parse_traits <- function (trait_string, pcall) {
 	})
 }
 
-check_traits <- function (trait_options, value, pcall) {
+check_value <- function (trait_options, value, pcall) {
 	# does the value have at least one 
 	# group of traits, with modifiers applied when needed?
 	# if yes, return true.
@@ -234,16 +235,11 @@ check_traits <- function (trait_options, value, pcall) {
 			# member in this group of traits 
 
 			trait_matched <- tryCatch({
-				# testing the value is risky, so do it in a trycatch
 
-				# say trait one more time...
-				# apply a modifier function to a trait test,
-				# returning a composite trait.
-				has_trait <- trait_modifiers[[trait$modifier]](
-					trait_tests[[trait$trait]]
-				)
+				modifier <- trait_modifiers[[trait$modifier]]
+				trait_test <- trait_tests[[trait$trait]]
 				
-				trait_matched <- has_trait(value)
+				trait_matched <- modifier(trait_test)(value)
 
 				if (is_boolean(trait_matched)) {
 					trait_matched
@@ -259,6 +255,7 @@ check_traits <- function (trait_options, value, pcall) {
 				}
 				},
 				error = function (error) {
+					# report error encountered.
 
 					report$error_encountered(
 						pcall, error, 
@@ -267,6 +264,7 @@ check_traits <- function (trait_options, value, pcall) {
 							value = trait$trait))
 				},
 				warning = function (warning) {
+					# report warning encountered.
 
 					report$warning_encountered(
 						pcall, warning, 
