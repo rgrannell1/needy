@@ -149,18 +149,13 @@ parse_traits <- function (trait_string, pcall) {
 			trait_modifiers$valid_modifiers,
 			function (modifier) {
 
-				trait_has_modifier <- grepl(paste0("^", modifier), trait)
-
-				if (trait_has_modifier) {
-					modifier
-				} else {
-					NULL
-				}
+				has_modifier <- grepl(paste0("^", modifier), trait)
+				if (has_modifier) modifier else NULL
 			}
 		))
 	}
 
-	whitespace <- '[ \t\n\r]+'
+	whitespace <- "[ \t\n\r]+"
 
 	lapply(
 		trait_string,
@@ -188,15 +183,17 @@ parse_traits <- function (trait_string, pcall) {
 							if (length(modifier) == 0) {
 								trait
 							} else {
-								substring(trait, nchar(modifier) + 1)								
-							}
+								substring(trait, nchar(modifier) + 1)
+							},
+						input_string = trait
 					)
 				}				
 			)
 
 			invalid <- Reduce(
 				function (acc, parsed_trait) {
-					# test if modifier-less trait is implemented.
+					# test if modifier-less trait is 
+					# currently implemented.
 
 					is_invalid <- !(parsed_trait$trait %in% 
 						trait_tests$valid_traits)
@@ -220,15 +217,15 @@ parse_traits <- function (trait_string, pcall) {
 	})
 }
 
-check_value <- function (trait_options, value, pcall) {
+check_value <- function (compound_trait_list, value, pcall) {
 	# does the value have at least one 
 	# group of traits, with modifiers applied when needed?
 	# if yes, return true.
-	# otherwise, throw a descriptive error."
+	# otherwise, throw a descriptive error.
 
-	for (compound_trait in trait_options) {
-
-		compound_trait_matched <- TRUE
+	for (compound_trait in compound_trait_list) {
+		# assume true until shown otherwise.
+		compound_matched <- TRUE
 		
 		for (trait in compound_trait) {
 			# return true if every value matched every 
@@ -250,7 +247,7 @@ check_value <- function (trait_options, value, pcall) {
 						pcall,
 						inputs = list(
 							value = value,
-							trait = trait$trait),
+							trait = trait$input_string),
 						actual = trait_matched)
 				}
 				},
@@ -261,7 +258,7 @@ check_value <- function (trait_options, value, pcall) {
 						pcall, error, 
 						inputs = list(
 							value = value,
-							value = trait$trait))
+							trait = trait$input_string))
 				},
 				warning = function (warning) {
 					# report warning encountered.
@@ -270,25 +267,25 @@ check_value <- function (trait_options, value, pcall) {
 						pcall, warning, 
 						inputs = list(
 							value = value,
-							trait = trait$trait))
+							trait = trait$input_string))
 				}
 			)
 				
 			# short-circuit group if the member didn't match
 			if (!trait_matched) {
-				compound_trait_matched <- FALSE
+				compound_matched <- FALSE
 				break
 			}
 		}
 
-		if (compound_trait_matched) {
+		if (compound_matched) {
 			break
 		}
 	}
 
 	# throw an error if no supertraits matched
-	compound_trait_matched ||report$no_match(
-		pcall, value, trait_options)	
+	compound_matched ||report$no_match(
+		pcall, value, compound_trait_list)	
 }
 
 #' @export

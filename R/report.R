@@ -51,23 +51,39 @@ report <- list(
 				readable$actual)
 		},
 	no_match =
-		function (pcall, value, traits) {
-			
+		function (pcall, value, compound_trait_list) {
+
 			text <- "%s: 
 				the value %s didn't match any of the following compound traits:
 				%s\n"
 
-			and_collapse <- function (val) {
-				paste0(val, collapse = ' and ')
+			and_collapse <- function (trait) {
+				paste0(trait, collapse = ' and ')
 			}
-			or_collapse <- function (val) {
-				paste0(unlist(val), collapse = ', or ')
+			or_collapse <- function (trait) {
+				paste0(unlist(trait), collapse = ', or ')
 			}
+
+			print(compound_trait_list)
 
 			readable <- list(
 				value = deparse_to_string(value),
-				expected = or_collapse(sapply(traits, and_collapse))
+				traits = Map(
+					function (compound_trait) {
+						# convert each trait from a $modifier, $trait pair to the 
+						# original input trait.
+
+						vapply(
+							compound_trait, 
+							function (trait) {
+								trait$input_string
+							},
+							"string")
+					},
+					compound_trait_list
+				)
 			)
+			readable$expected <- or_collapse(sapply(readable$traits, and_collapse))
 
 			stopf(text,
 				pcall,
@@ -87,7 +103,8 @@ report <- list(
 
 			stopf(text,
 				pcall, readable$value,
-				inputs$trait, error$message)
+				inputs$input_string,
+				error$message)
 		},
 	warning_encountered =
 		function (pcall, warning, inputs) {
@@ -102,14 +119,14 @@ report <- list(
 
 			stopf(text,
 				pcall, readable$value,
-				inputs$trait, warning$message)
+				inputs$input_string,
+				warning$message)
 		},
 	trait_overwrote = 
 		function (pcall, name) {
 
 			text <- "%s:\n the trait '%s' already exists: overwriting.\n"
 
-			warningf(text,
-				pcall, name)
+			warningf(text, pcall, name)
 		}
 )
