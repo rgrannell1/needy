@@ -12,6 +12,9 @@ code and aiding debugging.
 
 ### Usage
 
+```require_a``` is primarily designed to reduce the amount of boilerplate 
+that must be written to type-check functions. 
+
 ```javascript
 Map2 <- function (f, xs) {
 		
@@ -24,14 +27,17 @@ Map2 <- function (f, xs) {
 	}
 	res
 }
-
+Map2( function (a, b) a + b, 1:3 )
+```
+```
 Error: require_a("unary function", f, xs): 
 	the value function (a, b) a + b didn't match any of the following compound traits:
 	unary and function
-
 ```
-For a full list of implemented traits, use the aptly named ```implemented_traits()```. As of version
-0.3, the following traits
+
+For a full list of implemented traits and trait modifiers,
+use the aptly named ```implemented_traits()``` and ```implemented_modifiers()```.
+As of version 0.3, the following traits
 
 ```javascript
 *, any, arbitary, array, atomic, binary, boolean, call, character, closure, complex, data.frame, double, environment, expression, factor, false, finite, function, functionable, infinite, integer, language, length_one, length_three, length_two, length_zero, list, listy, logical, matrix, na, name, named, nan, nonnegative, null, nullary, number, numeric, object, pairlist, positive, primitive, raw, recursive, s4, string, symbol, table, ternary, true, unary, variadic, vector, whole
@@ -93,8 +99,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-### Footnotes
-
-[1] yes, pairlists aren't really used in R, but we might as well make our code as general as 
-possible. The 'listy' trait is a shorthand for ```c("vector", "pairlist")```.
