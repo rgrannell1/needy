@@ -5,7 +5,7 @@
 \alias{require_a}
 \title{Ensure a value has a desired set of traits.}
 \usage{
-  require_a(traits, value, pcall = NULL)
+  require_a(traits, value, pcall = Null)
 
   implemented_traits()
 

@@ -1,5 +1,6 @@
 
-# I prefer haskell to fortran.
+# all upper case? It makes my code look like it's
+# shouting at the user.
 
 Na <- NA
 True <- TRUE
@@ -11,7 +12,7 @@ deparse_to_string <- function (x) {
 	if (missing(x)) {
 		""
 	} else {
-		paste0(deparse(x), collapse = "\n")
+		paste0(deparse(x), collapse = "")
 	}	
 }
 
@@ -67,4 +68,3 @@ warningf <- function (string, ...) {
 is_boolean <- function (x) {
 	is.logical(x) && !is.na(x)
 }
-

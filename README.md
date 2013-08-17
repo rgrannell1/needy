@@ -12,55 +12,56 @@ code and aiding debugging.
 
 ### Usage
 
-A typical example where needy is useful is when trying to safeguard against
-invalid inputs when defining a function, by defining what types of inputs it
-*is* well defined for.
+```javascript
+Map2 <- function (f, xs) {
+		
+	require_a('unary function', f, xs)
+	require_a('listy', xs)
 
-```IndMap``` maps a two-parameter function across a list x and x's indices 1, 2, ..., n.
-It is only well defined if f is a binary (or variadic) function, and x is a list,
-a vector, or a pairlist. [1]
-
-```
-safeIndMap <- function (f, x) {
-	
-	pcall <- sys.call(sys.parent())
-	require_a("binary function", f, pcall)
-	require_a(c("vector", "pairlist"), x)
-
-	Map(f, x, seq_along(x))
+	res <- vector('list', length(xs))
+	for (ith in seq_along(xs)) {
+		res[[ith]] <- f( xs[[ith]] )
+	}
+	res
 }
+
+Error: require_a("unary function", f, xs): 
+	the value function (a, b) a + b didn't match any of the following compound traits:
+	unary and function
+
 ```
-
-If ```safeIndMap``` is now called with a three-variable function, a descriptive error is thrown
-showing the three-variable function. This error says that it was triggered by the fact
-that f wasn't a binary function, which is a pretty clear error message.
-
-```
-safeIndMap( function (a, b, c) a+b+c, 1:10 )
-
-Error: safeIndMap(function(a, b, c) a + b + c, 1:10): 
-	the value function (a, b, c) a + b + c didn't match any of the following compound traits:
-	binary and function
-```
-We can be fairly confident now that if the user passes incorrect input to safeIndMap they 
-should be able to figure out what went wrong quickly. 
-
 For a full list of implemented traits, use the aptly named ```implemented_traits()```. As of version
-0.1.1, the following traits are implemented.
+0.3, the following traits
 
 ```javascript
-currently implemented traits:
- any, array, atomic, binary, boolean, call, character, closure, complex, data.frame, double, environment, expression, factor, false, finite, function, functionable, infinite, integer, language, length_one, length_three, length_two, length_zero, list, listy, logical, matrix, na, name, named, nan, nonnegative, null, nullary, numeric, object, pairlist, positive, primitive, raw, recursive, s4, string, symbol, table, ternary, true, unary, variadic, vector, whole
+*, any, arbitary, array, atomic, binary, boolean, call, character, closure, complex, data.frame, double, environment, expression, factor, false, finite, function, functionable, infinite, integer, language, length_one, length_three, length_two, length_zero, list, listy, logical, matrix, na, name, named, nan, nonnegative, null, nullary, number, numeric, object, pairlist, positive, primitive, raw, recursive, s4, string, symbol, table, ternary, true, unary, variadic, vector, whole
 ```
+
+and the following trait modifiers
+
+```javascript
+!, id_, list_of_, pairlist_of_
+```
+
+are implemented.
+
 See the R documentation ```?require_a``` for more detailed usage information.
+
+### Future Development
+
+* more informative error messages: if a trait doesn't match an expectation
+then a list of traits that did match will be given.
+
+* better value deparsing: all values will be stringified using a 
+custom pretty-printing library I am currently developing.
 
 ### Alternatives
 
 I wrote needy because it fits a use case I have very tidely; I have 
 two large libraries (mchof and arrow, for those who are interested), and I needed
 a way of reducing the amount of ```if (is.function(f)) stop()` boilerplate code,
-and of standardising error messages. Needy ticks both boxes. Over times I will improve
-this library substantially, but if this library doesn't fit your needs at the moment I recommend:
+and of standardising error messages. 
+If this library doesn't fit your needs at the moment I recommend:
 
 * [https://github.com/hadley/assertthat](assertthat)
 * [http://cran.r-project.org/web/packages/assertive/index.html](assertive)

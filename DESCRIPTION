@@ -20,9 +20,9 @@ Suggests:
     combinat
 License: MIT
 Collate:
-    '_utils.R'
     'parse_traits.R'
     'say.R'
     'require_a.R'
     'trait_modifiers.R'
     'trait_tests.R'
+    'utils.R'

@@ -16,7 +16,7 @@ test_that(
 		value  <- "this is a value"
 		name <- "cat"
 		error <- list(message = "I am an error message")
-		trait_list <- list(list(modifier = "!", trait = "call", input_string = "!call"))
+		trait_list <- list(modifier = "!", trait = "call", input_string = "!call")
 
 		expect_error(say$missing_traits(pcall), pcall)
 

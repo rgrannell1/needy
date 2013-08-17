@@ -29,7 +29,7 @@ say <- list(
 	},
 	invalid_traits = function (pcall, invalid) {
 		stopf(
-			"%s: unrecognised trait(s): (%s)\n", 
+			"%s: unrecognised trait or trait modifier: (%s)\n", 
 			pcall, 
 			paste0(invalid, collapse = ', '))		
 	},
@@ -63,8 +63,6 @@ say <- list(
 			or_collapse <- function (trait) {
 				paste0(unlist(trait), collapse = ', or ')
 			}
-
-			print(compound_trait_list)
 
 			readable <- list(
 				value = deparse_to_string(value),

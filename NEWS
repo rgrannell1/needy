@@ -1,3 +1,15 @@
+
+Version 0.3
+--------------------------------------------------------------------
+
+Features:
+* implemented general trait modifiers; for example '!' and 'list_of_'. This makes
+it possible to test for conditions like '!function' and 'list_of_matrix'. Currently
+only one trait modifier may be used per trait.
+* added a function 'implemented_modifiers' to display the currently 
+implemented modifiers.
+* added 'arbitrary' and '*' as an alias for the 'any' trait.
+
 Version 0.2
 --------------------------------------------------------------------
 
@@ -14,5 +26,3 @@ Bug Fixes:
 * The errors of missing argument 'traits' or 'value' now correctly
 says which argument is missing.
 * A clearer error is given when arguments are not given to require_a.
-
-
