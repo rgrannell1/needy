@@ -12,7 +12,7 @@ the environment containing trait tests.
 
 Bug Fixes: 
 * The errors of missing argument 'traits' or 'value' now correctly
-reports which argument is missing.
+says which argument is missing.
 * A clearer error is given when arguments are not given to require_a.
 
 

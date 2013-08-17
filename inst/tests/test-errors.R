@@ -1,5 +1,5 @@
 
-context("require_a reports errors correctly")
+context("require_a says errors correctly")
 
 test_that("valid errors are triggered where expected (+ group)", {
 

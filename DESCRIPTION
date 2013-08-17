@@ -20,7 +20,8 @@ Suggests:
     combinat
 License: MIT
 Collate:
-    'report.R'
+    'parse_traits.R'
+    'say.R'
     'require_a.R'
     'tools.R'
     'trait_tests.R'

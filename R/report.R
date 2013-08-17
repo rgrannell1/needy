@@ -1,7 +1,7 @@
 
-report <- list(
+say <- list(
 	# an object (well, list...) containing 
-	# functions that report various errors and warnings
+	# functions that say various errors and warnings
 	missing_traits = function (pcall) {
 
 		stopf (

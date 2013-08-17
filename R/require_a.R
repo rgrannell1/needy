@@ -113,13 +113,13 @@ require_a <- function (traits, value, pcall = NULL) {
 	    error = force_error_handler)
 
 	if (missing(value)) {
-		report$missing_value(pcall)
+		say$missing_value(pcall)
 	}
 	if (missing(traits)) {
-		report$missing_traits(pcall)
+		say$missing_traits(pcall)
 	}
 	if (!is.character(traits)) {
-		report$traits_not_character(pcall, traits)
+		say$traits_not_character(pcall, traits)
 	}
 
 	# no traits are specified, or 
@@ -134,26 +134,83 @@ require_a <- function (traits, value, pcall = NULL) {
 			value, pcall)
 }
 
+# ------------ parse and check input traits ------------ #
+
+get_modifier <- function (trait) {
+	# string -> string
+	# returns a single matching modifier,
+	# or a length-zero collection.
+
+	unlist(lapply(
+		trait_modifiers$valid_modifiers,
+		function (modifier) {
+
+			has_modifier <- grepl(paste0("^", modifier), trait)
+			if (has_modifier) {
+				modifier
+			} else {
+				NULL
+			}
+		}
+	))
+}
+
+parse_one_trait <- function (trait) {
+	# string -> [modifier: string, trait: string, input_string: string]
+	# split a trait into a modifier (id if none is given), an underlying trait
+	# and the original string.
+
+	modifier <- get_modifier(trait)
+
+	list(
+		modifier = 
+			if (length(modifier) == 0) {
+				"id_" 
+			} else {
+				modifier
+			},
+		trait =
+			if (length(modifier) == 0) {
+				trait
+			} else {
+				substring(trait, nchar(modifier) + 1)
+			},
+		input_string = trait
+	)
+}
+
+get_invalid_traits <- function (parsed_traits) {
+	# [[modifier: string, trait: string, input_string: string]] -> 
+	# [[modifier: string, trait: string, input_string: string]]
+	# return a list of traits whose modifiers or underlying
+	# trait is not currently implemented.
+
+	valid <- list(
+		traits = 
+			trait_tests$valid_traits,
+		modifiers = 
+			trait_tests$valid_modifiers
+	)
+
+	Reduce(
+		function (acc, new) {
+
+			is_valid <- 
+				is.element(new$traits, valid$traits) &&
+				is.element(new$modifier, valid$modifiers)
+
+			if (!is_valid) c(acc, new) else acc
+		},
+		parsed_traits,
+		list()
+	)
+}
 
 parse_traits <- function (trait_string, pcall) {
 	# character -> call -> [modifier: string, trait: string]
 	# takes the raw traits string, and 
 	# transforms it into a list of
 	# trait groups to test. Throws errors if the inputs are invalid.
-	
-	get_modifier <- function (trait) {
-		# check if a trait is prefixed with any modifiers.
-		# as of version 0.3, only one modifier is allowed.
-
-		unlist(lapply(
-			trait_modifiers$valid_modifiers,
-			function (modifier) {
-
-				has_modifier <- grepl(paste0("^", modifier), trait)
-				if (has_modifier) modifier else NULL
-			}
-		))
-	}
 
 	whitespace <- "[ \t\n\r]+"
 
@@ -162,57 +219,21 @@ parse_traits <- function (trait_string, pcall) {
 		function (compound_trait) {
 
 			traits <- strsplit(compound_trait, split = whitespace)[[1]]
+			parsed_traits <- lapply(traits, parse_one_trait)
+			invalid_traits <- get_invalid_traits(parsed_traits)
 
-			parsed_traits <- lapply(
-				traits, 
-				function (trait) {
-					# string -> [:modifier, :trait]
-					# split every trait into a modifier ((a -> boolean) -> (a -> boolean)) and
-					# a trait (a -> boolean).
-
-					modifier <- get_modifier(trait)
-
-					list(
-						modifier = 
-							if (length(modifier) == 0) {
-								"id_" 
-							} else {
-								modifier
-							},
-						trait =
-							if (length(modifier) == 0) {
-								trait
-							} else {
-								substring(trait, nchar(modifier) + 1)
-							},
-						input_string = trait
-					)
-				}				
-			)
-
-			invalid <- Reduce(
-				function (acc, parsed_trait) {
-					# test if modifier-less trait is 
-					# currently implemented.
-
-					is_invalid <- !(parsed_trait$trait %in% 
-						trait_tests$valid_traits)
-					c(acc, 
-						if (is_invalid) {
-							parsed_traits$trait
-						} else {
-							character(0)
-						}
-					)
-				},
-				parsed_traits,
-				character(0)
-			)
-
-			if (length(invalid) == 0) {
+			if (length(invalid_traits) == 0) {
 				parsed_traits
 			} else {
-				report$invalid_traits(pcall, invalid)
+				# say the invalid input strings.
+
+				invalid_input_strings <- vapply(
+					invalid_traits,
+					function (trait) {
+						trait$input_string
+					}, "string"
+				)
+				say$invalid_traits(pcall, invalid_input_strings)
 			}
 	})
 }
@@ -241,9 +262,9 @@ check_value <- function (compound_trait_list, value, pcall) {
 				if (is_boolean(trait_matched)) {
 					trait_matched
 				} else {
-					# report non-boolean encountered.
+					# say non-boolean encountered.
 
-					report$non_boolean(
+					say$non_boolean(
 						pcall,
 						inputs = list(
 							value = value,
@@ -252,18 +273,18 @@ check_value <- function (compound_trait_list, value, pcall) {
 				}
 				},
 				error = function (error) {
-					# report error encountered.
+					# say error encountered.
 
-					report$error_encountered(
+					say$error_encountered(
 						pcall, error, 
 						inputs = list(
 							value = value,
 							trait = trait$input_string))
 				},
 				warning = function (warning) {
-					# report warning encountered.
+					# say warning encountered.
 
-					report$warning_encountered(
+					say$warning_encountered(
 						pcall, warning, 
 						inputs = list(
 							value = value,
@@ -284,7 +305,7 @@ check_value <- function (compound_trait_list, value, pcall) {
 	}
 
 	# throw an error if no supertraits matched
-	compound_matched ||report$no_match(
+	compound_matched ||say$no_match(
 		pcall, value, compound_trait_list)	
 }
 
@@ -321,7 +342,7 @@ add_trait <- function (name, trait_test) {
 	require_a("unary function", trait_test)
 
 	if (name %in% trait_tests$valid_traits) {
-		report$trait_overwrote(pcall, name)
+		say$trait_overwrote(pcall, name)
 	}
 
 	trait_tests[[name]] <- trait_test

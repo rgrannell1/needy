@@ -52,6 +52,10 @@ trait_tests <- ( function () {
 		}
 	test_for$null <- is.null
 	test_for$numeric <- is.numeric
+	test_for$number <- 
+		function (value) {
+			is.double(value) || is.integer(value)
+		}
 	test_for$object <- 
 		function (value) {
 			# a decent test for objectness,

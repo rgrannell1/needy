@@ -1,6 +1,6 @@
 
 context(
-	"error functions on report have to be shown to be fully functional
+	"error functions on say have to be shown to be fully functional
 	when given reasonable inputs."
 )
 
@@ -18,35 +18,35 @@ test_that(
 		error <- list(message = "I am an error message")
 		trait_list <- list(list(modifier = "!", trait = "call", input_string = "!call"))
 
-		expect_error(report$missing_traits(pcall), pcall)
+		expect_error(say$missing_traits(pcall), pcall)
 
-		expect_error(report$missing_value(pcall), pcall)
+		expect_error(say$missing_value(pcall), pcall)
 
 		expect_error(
-			report$traits_not_character(pcall, traits),
+			say$traits_not_character(pcall, traits),
 			pcall)
 
 		expect_error(
-			report$invalid_traits(pcall, invalid),
+			say$invalid_traits(pcall, invalid),
 			pcall)
 
 		expect_error(
-			report$non_boolean(pcall, inputs, actual),
+			say$non_boolean(pcall, inputs, actual),
 			pcall)
 
 		expect_error(
-			report$no_match(pcall, value, trait_list),
+			say$no_match(pcall, value, trait_list),
 			pcall)
 
 		expect_error(
-			report$error_encountered(pcall, error, inputs),
+			say$error_encountered(pcall, error, inputs),
 			pcall)
 
 		expect_error(
-			report$warning_encountered(pcall, error, inputs),
+			say$warning_encountered(pcall, error, inputs),
 			pcall)
 		expect_warning(
-			report$trait_overwrote(pcall, name),
+			say$trait_overwrote(pcall, name),
 			pcall)
 	}
 )
