@@ -80,7 +80,7 @@
 #' @rdname require_a
 #' @example inst/examples/example-require_a.R
 
-require_a <- function (traits, value, pcall = NULL) {
+require_a <- function (traits, value, pcall = Null) {
 	# character -> a -> call|string -> boolean
 	# test if the value has the required traits,
 	# if it doesn't throw a helpful error. decorate with 

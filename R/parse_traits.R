@@ -14,7 +14,7 @@ get_modifier <- function (trait) {
 			if (has_modifier) {
 				modifier
 			} else {
-				NULL
+				Null
 			}
 		}
 	))
@@ -54,14 +54,14 @@ get_invalid_traits <- function (parsed_traits) {
 		traits = 
 			trait_tests$valid_traits,
 		modifiers = 
-			trait_tests$valid_modifiers
+			trait_modifiers$valid_modifiers
 	)
 
 	Reduce(
 		function (acc, new) {
 
 			is_valid <- 
-				is.element(new$traits, valid$traits) &&
+				is.element(new$trait, valid$traits) &&
 				is.element(new$modifier, valid$modifiers)
 
 			if (!is_valid) c(acc, list(new)) else acc
