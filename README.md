@@ -40,7 +40,14 @@ use the aptly named ```implemented_traits()``` and ```implemented_modifiers()```
 As of version 0.3, the following traits
 
 ```javascript
-*, any, arbitary, array, atomic, binary, boolean, call, character, closure, complex, data.frame, double, environment, expression, factor, false, finite, function, functionable, infinite, integer, language, length_one, length_three, length_two, length_zero, list, listy, logical, matrix, na, name, named, nan, nonnegative, null, nullary, number, numeric, object, pairlist, positive, primitive, raw, recursive, s4, string, symbol, table, ternary, true, unary, variadic, vector, whole
+*, any, arbitary, array, atomic, binary, boolean, call, 
+character, closure, complex, data.frame, double, environment,
+expression, factor, false, finite, function, functionable,
+infinite, integer, language, length_one, length_three, length_two,
+length_zero, list, listy, logical, matrix, na, name, named, nan, nonnegative,
+null, nullary, number, numeric, object, pairlist, positive, primitive, raw,
+recursive, s4, string, symbol, table, ternary,
+true, unary, variadic, vector, whole
 ```
 
 and the following trait modifiers
