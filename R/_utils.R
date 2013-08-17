@@ -1,4 +1,11 @@
 
+# I prefer haskell to fortran.
+
+Na <- NA
+True <- TRUE
+Null <- NULL
+False <- FALSE
+
 deparse_to_string <- function (x) {
 
 	if (missing(x)) {
@@ -21,7 +28,7 @@ stopf <- function (string, ...) {
 	})
 
 	message <- do.call(gettextf, c(list(string), stringified))
-	stop(message, call. = FALSE)
+	stop(message, call. = False)
 }
 
 messagef <- function (string, ...) {
@@ -37,7 +44,7 @@ messagef <- function (string, ...) {
 	})
 
 	message <- do.call(gettextf, c(list(string), stringified))
-	message (message, call. = FALSE)
+	message (message, call. = False)
 }
 
 warningf <- function (string, ...) {
@@ -54,7 +61,7 @@ warningf <- function (string, ...) {
 	})
 
 	message <- do.call(gettextf, c(list(string), stringified))
-	warning (message, call. = FALSE)
+	warning (message, call. = False)
 }
 
 is_boolean <- function (x) {

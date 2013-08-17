@@ -10,9 +10,9 @@ trait_tests <- ( function () {
 	)
 	
 	# useful for testing purposes
-	test_for$any <- function (value) TRUE
-	test_for$arbitary <- function (value) TRUE
-	test_for$'*' <- function (value) TRUE
+	test_for$any <- function (value) True
+	test_for$arbitary <- function (value) True
+	test_for$'*' <- function (value) True
 
 	# (mostly) builtin functions,
 	# tht mostly test the class of the object
@@ -242,7 +242,7 @@ trait_modifiers <- ( function () {
 			function (value) {
 
 				if (!is.list(value)) {
-					FALSE
+					False
 				} else {
 					all( unlist(lapply(value, test)) )
 				}
@@ -253,7 +253,7 @@ trait_modifiers <- ( function () {
 			function (value) {
 
 				if (!is.pairlist(value)) {
-					FALSE
+					False
 				} else {
 					all( unlist(lapply(value, test)) )
 				}

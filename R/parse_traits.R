@@ -64,7 +64,7 @@ get_invalid_traits <- function (parsed_traits) {
 				is.element(new$traits, valid$traits) &&
 				is.element(new$modifier, valid$modifiers)
 
-			if (!is_valid) c(acc, new) else acc
+			if (!is_valid) c(acc, list(new)) else acc
 		},
 		parsed_traits,
 		list()
@@ -98,7 +98,7 @@ parse_traits <- function (trait_string, pcall) {
 						trait$input_string
 					}, "string"
 				)
-				report$invalid_traits(pcall, invalid_input_strings)
+				say$invalid_traits(pcall, invalid_input_strings)
 			}
 	})
 }

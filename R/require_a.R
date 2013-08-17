@@ -99,7 +99,7 @@ require_a <- function (traits, value, pcall = NULL) {
 	}
 
 	force_error_handler <- function (error) {
-        stop(paste0(pcall, ": ", error$message), call. = FALSE)
+        stop(paste0(pcall, ": ", error$message), call. = False)
 	}
 
 	tryCatch(
@@ -134,110 +134,6 @@ require_a <- function (traits, value, pcall = NULL) {
 			value, pcall)
 }
 
-# ------------ parse and check input traits ------------ #
-
-get_modifier <- function (trait) {
-	# string -> string
-	# returns a single matching modifier,
-	# or a length-zero collection.
-
-	unlist(lapply(
-		trait_modifiers$valid_modifiers,
-		function (modifier) {
-
-			has_modifier <- grepl(paste0("^", modifier), trait)
-			if (has_modifier) {
-				modifier
-			} else {
-				NULL
-			}
-		}
-	))
-}
-
-parse_one_trait <- function (trait) {
-	# string -> [modifier: string, trait: string, input_string: string]
-	# split a trait into a modifier (id if none is given), an underlying trait
-	# and the original string.
-
-	modifier <- get_modifier(trait)
-
-	list(
-		modifier = 
-			if (length(modifier) == 0) {
-				"id_" 
-			} else {
-				modifier
-			},
-		trait =
-			if (length(modifier) == 0) {
-				trait
-			} else {
-				substring(trait, nchar(modifier) + 1)
-			},
-		input_string = trait
-	)
-}
-
-get_invalid_traits <- function (parsed_traits) {
-	# [[modifier: string, trait: string, input_string: string]] -> 
-	# [[modifier: string, trait: string, input_string: string]]
-	# return a list of traits whose modifiers or underlying
-	# trait is not currently implemented.
-
-	valid <- list(
-		traits = 
-			trait_tests$valid_traits,
-		modifiers = 
-			trait_tests$valid_modifiers
-	)
-
-	Reduce(
-		function (acc, new) {
-
-			is_valid <- 
-				is.element(new$traits, valid$traits) &&
-				is.element(new$modifier, valid$modifiers)
-
-			if (!is_valid) c(acc, new) else acc
-		},
-		parsed_traits,
-		list()
-	)
-}
-
-parse_traits <- function (trait_string, pcall) {
-	# character -> call -> [modifier: string, trait: string]
-	# takes the raw traits string, and 
-	# transforms it into a list of
-	# trait groups to test. Throws errors if the inputs are invalid.
-
-	whitespace <- "[ \t\n\r]+"
-
-	lapply(
-		trait_string,
-		function (compound_trait) {
-
-			traits <- strsplit(compound_trait, split = whitespace)[[1]]
-			parsed_traits <- lapply(traits, parse_one_trait)
-			invalid_traits <- get_invalid_traits(parsed_traits)
-
-			if (length(invalid_traits) == 0) {
-				parsed_traits
-			} else {
-				# say the invalid input strings.
-
-				invalid_input_strings <- vapply(
-					invalid_traits,
-					function (trait) {
-						trait$input_string
-					}, "string"
-				)
-				say$invalid_traits(pcall, invalid_input_strings)
-			}
-	})
-}
-
 check_value <- function (compound_trait_list, value, pcall) {
 	# does the value have at least one 
 	# group of traits, with modifiers applied when needed?
@@ -245,11 +141,11 @@ check_value <- function (compound_trait_list, value, pcall) {
 	# otherwise, throw a descriptive error.
 
 	for (compound_trait in compound_trait_list) {
-		# assume true until shown otherwise.
-		compound_matched <- TRUE
+		# assume True until shown otherwise.
+		compound_matched <- True
 		
 		for (trait in compound_trait) {
-			# return true if every value matched every 
+			# return True if every value matched every 
 			# member in this group of traits 
 
 			trait_matched <- tryCatch({
@@ -294,7 +190,7 @@ check_value <- function (compound_trait_list, value, pcall) {
 				
 			# short-circuit group if the member didn't match
 			if (!trait_matched) {
-				compound_matched <- FALSE
+				compound_matched <- False
 				break
 			}
 		}
