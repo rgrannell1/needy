@@ -10,6 +10,10 @@ only one trait modifier may be used per trait.
 implemented modifiers.
 * added 'arbitrary' and '*' as an alias for the 'any' trait.
 
+Bug Fixes: 
+* the trait 'positive' now works for length-zero values like integer(0).
+* improved error message formatting.
+
 Version 0.2
 --------------------------------------------------------------------
 

@@ -4,48 +4,64 @@ say <- list(
 	# functions that say various errors and warnings
 	missing_traits = function (pcall) {
 
-		stopf (
-			"%s: the parameter 'traits' was missing but is required\n", 
+		text <- "%s: the parameter 'traits' was missing but is required\n"
+
+		stopf(
+			text, 
 			pcall)
 	},
 	missing_value = function (pcall) {
-		stopf (
-			"%s: the parameter 'value' was missing but is required\n", 
+
+		text <- "%s: the parameter 'value' was missing but is required\n"
+
+		stopf(
+			text, 
 			pcall)
 	},
 	traits_not_character = function (pcall, traits) {
-		stopf (
-			"%s: the parameter 'traits' must be a character vector\n
-			actual class was %s
-			", 
+
+		text <- paste0(
+			"%s: the parameter 'traits' must be a character vector\n",
+			"actual class was %s")
+
+		stopf(
+			text, 
 			pcall, paste0(class(traits), collapse = ", "))
 	},
 	inputs_not_list = function (pcall, inputs) {
+
+		text <- paste0(
+			"%s: the parameter ", dQuote(traits), " must be a list\n",
+			"actual class was %s")
+
 		stopf(
-			"%s: the parameter 'traits' must be a list\n
-			actual class was %s
-			", 
+			text, 
 			pcall, paste0(class(inputs), collapse = ", "))
 	},
 	invalid_traits = function (pcall, invalid) {
+
+		text <- "%s: unrecognised trait or trait modifier: (%s)\n"
+
 		stopf(
-			"%s: unrecognised trait or trait modifier: (%s)\n", 
+			text, 
 			pcall, 
 			paste0(invalid, collapse = ', '))		
 	},
 	non_boolean = 
 		function (pcall, inputs, actual) {
 
-			text <- '%s:
-				the value %s returned a non true/false value when tested for the trait %s:\n
-				actual value was %s\n'
+			text <- paste0(
+				"%s:",
+				"the value %s returned a non true/false value when tested for the trait %s:\n",
+				"actual value was %s\n")
 
 			readable <- list(
 				value = deparse_to_string(inputs$value),
 				actual = deparse_to_string(actual)
 			)
 
-			stopf(text,
+			stopf(
+				text,
 				pcall, 
 				readable$value, inputs$trait,
 				readable$actual)
@@ -53,9 +69,10 @@ say <- list(
 	no_match =
 		function (pcall, value, compound_trait_list) {
 
-			text <- "%s: 
-				the value %s didn't match any of the following compound traits:
-				%s\n"
+			text <- paste0(
+				"%s:\n", 
+				"the value %s didn't match any of the following compound traits:\n",
+				"%s\n")
 
 			and_collapse <- function (trait) {
 				paste0(trait, collapse = ' and ')
@@ -91,9 +108,11 @@ say <- list(
 	error_encountered = 
 		function (pcall, error, inputs) {
 
-			text <- '%s:\n
-			an error was encountered while testing the value %s for the the trait "%s":\n
-			%s\n'
+			text <- paste0(
+				"%s:\n",
+				"an error was encountered while testing the value %s for the the trait ",
+				dQuote("%s"), " :\n",
+				"%s\n")
 
 			readable <- list(
 				value = deparse_to_string(inputs$value)
@@ -106,9 +125,11 @@ say <- list(
 	warning_encountered =
 		function (pcall, warning, inputs) {
 
-			text <- '%s:\n
-			a warning was encountered while testing the value %s for the the trait "%s":\n
-			%s\n'
+			text <- paste0(
+				"%s:\n",
+				"a warning was encountered while testing the value %s for the the trait ",
+				dQuote("%s"), ":\n",
+				"%s\n")
 
 			readable <- list(
 				value = deparse_to_string(inputs$value)

@@ -102,7 +102,8 @@ trait_tests <- ( function () {
 		function (value) {
 			length(value) > 1 &&
 			is.numeric(value) && 
-			!is.nan(value) && value > 0
+			!any(is.nan(value)) &&
+			all(value > 0)
 		}
 	test_for$nonnegative <-
 		function (value) {
