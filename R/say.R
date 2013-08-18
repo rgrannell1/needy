@@ -101,8 +101,7 @@ say <- list(
 
 			stopf(text,
 				pcall, readable$value,
-				inputs$input_string,
-				error$message)
+				inputs$trait, error$message)
 		},
 	warning_encountered =
 		function (pcall, warning, inputs) {
@@ -117,8 +116,7 @@ say <- list(
 
 			stopf(text,
 				pcall, readable$value,
-				inputs$input_string,
-				warning$message)
+				inputs$trait, warning$message)
 		},
 	trait_overwrote = 
 		function (pcall, name) {

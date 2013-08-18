@@ -65,7 +65,7 @@
 
   \code{"positive integer"}
 
-  \code{c("positive integer", "na")}
+  \code{c("positive, integer", "na")}
 
   \code{c("na", "null", "length_one pairlist")}
 
@@ -107,13 +107,15 @@
   the value 1 didn't match any of the following compound
   traits: length_one and list, or null'}
 
-  As of version 0.2 trait negation is also supported:
+  As of version 0.3 trait modifiers are allowed:
 
   \code{require_a("!null", NULL)}
 
   \code{Error: require_a("!null", NULL): the value NULL
   didn't match any of the following compound traits:
   !null'}
+
+  \code{require_a("list_of_string", list('a', 'b'))}
 }
 \examples{
 

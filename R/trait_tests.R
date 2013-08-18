@@ -100,6 +100,7 @@ trait_tests <- ( function () {
 		}
 	test_for$positive <- 
 		function (value) {
+			length(value) > 1 &&
 			is.numeric(value) && 
 			!is.nan(value) && value > 0
 		}
@@ -156,7 +157,8 @@ trait_tests <- ( function () {
 
 	# from my library arrow. consistent way
 	# of checking function parameters/formals.
-	# won't be attatched to the test_for environment
+	# won't be attatched to the test_for environment 
+	# at the top level.
 
 	xParams <- function (f) {
 		if (is.primitive(f)) {
