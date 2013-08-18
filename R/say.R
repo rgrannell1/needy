@@ -4,7 +4,10 @@ say <- list(
 	# functions that say various errors and warnings
 	missing_traits = function (pcall) {
 
-		text <- "%s: the parameter 'traits' was missing but is required\n"
+		text <- paste0(
+			"%s: the parameter ",
+			dQuote("traits"),
+			" was missing but is required\n")
 
 		stopf(
 			text, 
@@ -12,8 +15,10 @@ say <- list(
 	},
 	missing_value = function (pcall) {
 
-		text <- "%s: the parameter 'value' was missing but is required\n"
-
+		text <- paste0(
+			"%s: the parameter ",
+			dQuote("value"),
+			" was missing but is required\n")
 		stopf(
 			text, 
 			pcall)
@@ -21,7 +26,8 @@ say <- list(
 	traits_not_character = function (pcall, traits) {
 
 		text <- paste0(
-			"%s: the parameter 'traits' must be a character vector\n",
+			"%s: the parameter ", dQuote('traits'), 
+			" must be a character vector\n",
 			"actual class was %s")
 
 		stopf(
@@ -52,7 +58,8 @@ say <- list(
 
 			text <- paste0(
 				"%s:",
-				"the value %s returned a non true/false value when tested for the trait %s:\n",
+				"the value %s returned a non true/false value when tested for the trait ",
+				dQuote("%s"), " :\n",
 				"actual value was %s\n")
 
 			readable <- list(
@@ -128,7 +135,7 @@ say <- list(
 			text <- paste0(
 				"%s:\n",
 				"a warning was encountered while testing the value %s for the the trait ",
-				dQuote("%s"), ":\n",
+				dQuote("%s"), " :\n",
 				"%s\n")
 
 			readable <- list(
@@ -142,7 +149,10 @@ say <- list(
 	trait_overwrote = 
 		function (pcall, name) {
 
-			text <- "%s:\n the trait '%s' already exists: overwriting.\n"
+			text <- paste0(
+				"%s:\n",
+				"the trait ", dQuote("%s"),
+				" already exists: overwriting.\n")
 
 			warningf(text, pcall, name)
 		}

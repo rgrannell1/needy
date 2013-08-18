@@ -12,7 +12,8 @@ implemented modifiers.
 
 Bug Fixes: 
 * the trait 'positive' now works for length-zero values like integer(0).
-* improved error message formatting.
+* improved error message formatting; whitespaces are no longer erroneously
+added to some error messages.
 
 Version 0.2
 --------------------------------------------------------------------
