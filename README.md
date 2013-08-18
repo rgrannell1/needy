@@ -39,7 +39,7 @@ For a full list of implemented traits and trait modifiers,
 use the aptly named ```implemented_traits()``` and ```implemented_modifiers()```.
 As of version 0.3, the following traits
 
-```javascript
+```
 *, any, arbitary, array, atomic, binary, boolean, call, 
 character, closure, complex, data.frame, double, environment,
 expression, factor, false, finite, function, functionable,
@@ -52,7 +52,7 @@ true, unary, variadic, vector, whole
 
 and the following trait modifiers
 
-```javascript
+```
 !, id_, list_of_, pairlist_of_
 ```
 

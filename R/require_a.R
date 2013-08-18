@@ -100,19 +100,16 @@ require_a <- function (traits, value, pcall = Null) {
 		deparse_to_string( sys.call() )
 	}
 
-	force_error_handler <- function (error) {
-        stop(paste0(pcall, ": ", error$message), call. = False)
-	}
-
 	tryCatch(
 	    { force(traits) },
-	    error = force_error_handler)
+	    error = function (error) {
+	    	say$missing_traits(pcall)
+	    })
 	tryCatch(
 	    { force(value) },
-	    error = force_error_handler)
-	tryCatch(
-	    { force(pcall) },
-	    error = force_error_handler)
+	    error = function (error) {
+	    	say$missing_value(pcall)
+	    })
 
 	if (missing(value)) {
 		say$missing_value(pcall)
