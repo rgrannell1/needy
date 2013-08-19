@@ -100,7 +100,7 @@ trait_tests <- ( function () {
 		}
 	test_for$positive <- 
 		function (value) {
-			length(value) > 1 &&
+			length(value) > 0 &&
 			is.numeric(value) && 
 			!any(is.nan(value)) &&
 			all(value > 0)

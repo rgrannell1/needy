@@ -78,6 +78,9 @@
 #' @param name a string giving the name of the test to add. required.
 #' @param trait_test a unary function that returns a true or false value. 
 #'     This function should tests for a particular trait.required.
+#' @param trait_modifier a unary function that takes a trait test, and returns a new trait test.
+#'     Examples include '!', which takes any trait test \code{f} and returns a trait test 
+#'     that is true when the f returns false.
 #' @export
 #' @rdname require_a
 #' @example inst/examples/example-require_a.R
@@ -208,7 +211,7 @@ check_value <- function (compound_trait_list, value, pcall) {
 #' @rdname require_a
 
 implemented_traits <- function () {
-	"print all traits available in the current version"
+	# print all traits available in the current version"
 
 	cat('currently implemented traits:\n',
 		paste0(trait_tests$valid_traits, collapse = ", ")
@@ -229,8 +232,8 @@ implemented_modifiers <- function () {
 #' @rdname require_a
 
 add_trait <- function (name, trait_test) {
-	"string -> (a -> boolean) -> null
-	add a new trait to the trait tests"
+	# string -> (a -> boolean) -> null
+	# add a new trait to the trait tests.
 
 	pcall <- sys.call()
 	require_a("string", name, pcall)
@@ -242,4 +245,23 @@ add_trait <- function (name, trait_test) {
 
 	trait_tests[[name]] <- trait_test
 	trait_tests$valid_traits <- ls(trait_tests)
+}
+
+#' @export
+#' @rdname require_a
+
+add_modifier <- function (name, trait_modifier) {
+	# string -> (a -> boolean) -> null
+	# add a new modifier to the trait modifier.
+
+	pcall <- sys.call()
+	require_a("string", name, pcall)
+	require_a("unary function", trait_modifier)
+
+	if (name %in% trait_tests$valid_modifiers) {
+		say$modifier_overwrote(pcall, name)
+	}
+
+	trait_modifiers[[name]] <- trait_modifier
+	trait_modifiers$valid_modifiers <- ls(trait_modifiers)
 }

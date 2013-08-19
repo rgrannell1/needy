@@ -1,3 +1,4 @@
+export(add_modifier)
 export(add_trait)
 export(implemented_modifiers)
 export(implemented_traits)

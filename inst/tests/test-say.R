@@ -16,7 +16,14 @@ test_that(
 		value  <- "this is a value"
 		name <- "cat"
 		error <- list(message = "I am an error message")
-		trait_list <- list(modifier = "!", trait = "call", input_string = "!call")
+		trait_list <- 
+			list(
+				list(
+					list(
+						modifier = "id_",
+						trait = "positive", 
+				    	input_string = "positive")) )
+
 
 		expect_error(say$missing_traits(pcall), pcall)
 
@@ -47,6 +54,9 @@ test_that(
 			pcall)
 		expect_warning(
 			say$trait_overwrote(pcall, name),
+			pcall)
+		expect_warning(
+			say$modifier_overwrote(pcall, name),
 			pcall)
 	}
 )

@@ -155,5 +155,15 @@ say <- list(
 				" already exists: overwriting.\n")
 
 			warningf(text, pcall, name)
+		},
+	modifier_overwrote = 
+		function (pcall, name) {
+
+			text <- paste0(
+				"%s:\n",
+				"the modifier ", dQuote("%s"),
+				" already exists: overwriting.\n")
+
+			warningf(text, pcall, name)
 		}
 )

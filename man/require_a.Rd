@@ -1,4 +1,5 @@
 \name{require_a}
+\alias{add_modifier}
 \alias{add_trait}
 \alias{implemented_modifiers}
 \alias{implemented_traits}
@@ -12,6 +13,8 @@
   implemented_modifiers()
 
   add_trait(name, trait_test)
+
+  add_modifier(name, trait_modifier)
 }
 \arguments{
   \item{traits}{a character vector, with each element being
@@ -32,6 +35,11 @@
   \item{trait_test}{a unary function that returns a true or
   false value.  This function should tests for a particular
   trait.required.}
+
+  \item{trait_modifier}{a unary function that takes a trait
+  test, and returns a new trait test.  Examples include
+  '!', which takes any trait test \code{f} and returns a
+  trait test that is true when the f returns false.}
 }
 \description{
   Ensure a value has a desired set of traits.
