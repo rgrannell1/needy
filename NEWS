@@ -9,11 +9,15 @@ only one trait modifier may be used per trait.
 * added a function 'implemented_modifiers' to display the currently 
 implemented modifiers.
 * added 'arbitrary' and '*' as an alias for the 'any' trait.
+* several tests (infinite, na, boolean) are now vectorised; if a single value
+is desired write 'length_one trait'.
 
 Bug Fixes: 
 * the trait 'positive' now works for length-zero values like integer(0).
 * improved error message formatting; whitespaces are no longer erroneously
 added to some error messages.
+* fixed strange bug in test for function arity, where non-function values
+would always return true.
 
 Version 0.2
 --------------------------------------------------------------------

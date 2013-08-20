@@ -24,16 +24,18 @@ trait_tests <- ( function () {
 	test_for$data.frame <-  is.data.frame
 	test_for$double <- is.double
 	test_for$environment <- is.environment
-	test_for$expression <-  is.expression
+	test_for$expression <- is.expression
 	test_for$factor <- is.factor
 	test_for$finite <-  
 		function (value) {
-			is.numeric(value) && is.finite(value)
+			length(value) > 0 && 
+			all(is.finite(value))
 		}
 	test_for$'function' <- is.function
 	test_for$infinite <-  
 		function (value) {
-			is.numeric(value) && is.infinite(value)
+			length(value) > 0 && 
+			all(is.infinite(value))
 		}
 	test_for$integer <- is.integer
 	test_for$language <- is.language
@@ -42,19 +44,25 @@ trait_tests <- ( function () {
 	test_for$matrix <- is.matrix
 	test_for$na <- 
 		function (value) {
+			# works on vectors or lists.
 			is.vector(value) && 
-			!is.expression(value) && is.na(value)
+			!is.expression(value) &&
+			all(is.na(value))
 		}
 	test_for$name <- is.name
 	test_for$nan <- 
 		function (value) {
-			is.numeric(value) && is.nan(value)
+			(is.numeric(value) ||
+			is.complex(value)) &&
+			is.nan(value)
 		}
 	test_for$null <- is.null
 	test_for$numeric <- is.numeric
 	test_for$number <- 
 		function (value) {
-			is.double(value) || is.integer(value)
+			is.double(value) || 
+			is.integer(value) || 
+			is.complex(value)
 		}
 	test_for$object <- 
 		function (value) {
@@ -122,7 +130,8 @@ trait_tests <- ( function () {
 		}
 	test_for$boolean <-
 		function (value) {
-			is.logical(value) && !is.na(value)
+			is.logical(value) && 
+			all(!is.na(value))
 		}
 	test_for$string <- 
 		function (value) {
@@ -174,7 +183,7 @@ trait_tests <- ( function () {
 
 	test_for$nullary <- 
 		function (value) {
-			!is.function(value) || {
+			is.function(value) && {
 				params <- xParams(value)
 
 				"..." %in% names(params) ||
@@ -183,7 +192,7 @@ trait_tests <- ( function () {
 		}
 	test_for$unary <-  
 		function (value) {
-			!is.function (value) || {
+			is.function (value) && {
 				params <- xParams(value)
 
 				"..." %in% names(params) ||
@@ -192,7 +201,7 @@ trait_tests <- ( function () {
 		}
 	test_for$binary <-
 		function (value) {
-			!is.function(value) || {
+			is.function(value) && {
 				params <- xParams(value)
 
 				"..." %in% names(params) ||
@@ -201,7 +210,7 @@ trait_tests <- ( function () {
 		}
 	test_for$ternary <- 
 		function (value) {
-			!is.function(value) || {
+			is.function(value) && {
 				params <- xParams(value)
 
 				"..." %in% names(params) ||
@@ -210,7 +219,7 @@ trait_tests <- ( function () {
 		}
 	test_for$variadic <-
 		function (value) {
-			!is.function(value) || {
+			is.function(value) && {
 				params <- xParams(value)
 				"..." %in% names(params)				
 			}
