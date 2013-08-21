@@ -38,6 +38,17 @@ trait_modifiers <- ( function () {
 				}
 			}
 		}
+	modify_with$listy_of_ <-
+		function (test)  {
+			function (value) {
+
+				if (!(is.pairlist(value) || is.list(value) || is.vector(value))) {
+					False
+				} else {
+					all( unlist(lapply(value, test)) )
+				}
+			}
+		}
 
 	modify_with$valid_modifiers <- ls(modify_with)
 	modify_with
