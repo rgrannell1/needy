@@ -73,8 +73,8 @@ custom pretty-printing library I am currently developing.
 I wrote needy to fit a specific use case; I have 
 two large libraries (mchof and arrow, for those who are interested), and I needed
 a way of reducing the amount of ```if (is.function(f)) stop()` boilerplate code,
-and of standardising error messages. 
-If this library doesn't fit your needs at the moment I recommend:
+and of standardising error messages. I find that needy works well for me, but
+if this library doesn't fit your needs at the moment I recommend:
 
 * [https://github.com/hadley/assertthat](assertthat)
 * [http://cran.r-project.org/web/packages/assertive/index.html](assertive)
