@@ -41,7 +41,7 @@ As of version 0.3, the following traits
 
 ```
 *, any, arbitary, array, atomic, binary, boolean, call, 
-character, closure, complex, data.frame, double, environment,
+character, closure, complex, collection, data.frame, double, environment,
 expression, factor, false, finite, function, functionable,
 infinite, integer, language, length_one, length_three, length_two,
 length_zero, list, listy, logical, matrix, na, name, named, nan, nonnegative,
@@ -53,7 +53,7 @@ true, unary, variadic, vector, whole
 and the following trait modifiers
 
 ```
-!, id_, list_of_, pairlist_of_
+!, collection_of_, id_, list_of_, listy_of_, pairlist_of_
 ```
 
 are implemented.
@@ -70,7 +70,7 @@ custom pretty-printing library I am currently developing.
 
 ### Alternatives
 
-I wrote needy because it fits a use case I have very tidely; I have 
+I wrote needy to fit a specific use case; I have 
 two large libraries (mchof and arrow, for those who are interested), and I needed
 a way of reducing the amount of ```if (is.function(f)) stop()` boilerplate code,
 and of standardising error messages. 

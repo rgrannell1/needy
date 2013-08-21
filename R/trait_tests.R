@@ -146,6 +146,8 @@ trait_tests <- ( function () {
 			is.list(value) || 
 			is.pairlist(value)
 		}
+	test_for$collection <- 
+		test_for$listy
 
 	# quantifiers
 	test_for$length_zero <- 

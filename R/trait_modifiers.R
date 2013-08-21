@@ -49,6 +49,8 @@ trait_modifiers <- ( function () {
 				}
 			}
 		}
+	modify_with$collection_of_ <- 
+		modify_with$listy_of_
 
 	modify_with$valid_modifiers <- ls(modify_with)
 	modify_with
