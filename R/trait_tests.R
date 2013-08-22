@@ -11,7 +11,7 @@ trait_tests <- ( function () {
 	
 	# useful for testing purposes
 	test_for$any <- function (value) True
-	test_for$arbitary <- function (value) True
+	test_for$arbitrary <- function (value) True
 	test_for$'*' <- function (value) True
 
 	# (mostly) builtin functions,
