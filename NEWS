@@ -12,6 +12,11 @@ implemented modifiers.
 * several tests (infinite, na, boolean) are now vectorised; if a single value
 is desired write 'length_one trait'.
 
+API Changes:
+* the trait 'named' now simply tests to see if the trait has non-null names; 
+now "named list()" is considered named. See the trait 'keyed' for a trait 
+that also tests for non-empty slot names.
+
 Bug Fixes: 
 * the trait 'positive' now works for length-zero values like integer(0).
 * improved error message formatting; whitespaces are no longer erroneously

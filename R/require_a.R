@@ -102,6 +102,12 @@ require_a <- function (traits, value, pcall = Null) {
 	} else {
 		deparse_to_string( sys.call() )
 	}
+	value_name <- as.list( match.call() )[-1]$value
+	value_name <- if (is.symbol(value_name)) {
+		paste(value_name)
+	} else {
+		"value"
+	}
 
 	tryCatch(
 	    { force(traits) },
@@ -111,7 +117,7 @@ require_a <- function (traits, value, pcall = Null) {
 	tryCatch(
 	    { force(value) },
 	    error = function (error) {
-	    	say$missing_value(pcall)
+	    	say$missing_value(pcall, value_name)
 	    })
 
 	if (missing(value)) {

@@ -7,28 +7,29 @@ say <- list(
 		text <- paste0(
 			"%s: the parameter ",
 			dQuote("traits"),
-			" was missing but is required\n")
+			" was missing but is required.\n")
 
 		stopf(
 			text, 
 			pcall)
 	},
-	missing_value = function (pcall) {
+	missing_value = function (pcall, name) {
 
 		text <- paste0(
 			"%s: the parameter ",
-			dQuote("value"),
-			" was missing but is required\n")
+			dQuote("%s"),
+			" was missing but is required.\n")
 		stopf(
 			text, 
-			pcall)
+			pcall,
+			name)
 	},
 	traits_not_character = function (pcall, traits) {
 
 		text <- paste0(
 			"%s: the parameter ", dQuote('traits'), 
 			" must be a character vector\n",
-			"actual class was %s")
+			"actual class was %s.\n")
 
 		stopf(
 			text, 
@@ -38,7 +39,7 @@ say <- list(
 
 		text <- paste0(
 			"%s: the parameter ", dQuote(traits), " must be a list\n",
-			"actual class was %s")
+			"actual class was %s.\n")
 
 		stopf(
 			text, 
@@ -46,7 +47,7 @@ say <- list(
 	},
 	invalid_traits = function (pcall, invalid) {
 
-		text <- "%s: unrecognised trait or trait modifier: (%s)\n"
+		text <- "%s: unrecognised trait or trait modifier: (%s).\n"
 
 		stopf(
 			text, 
@@ -60,7 +61,7 @@ say <- list(
 				"%s:",
 				"the value %s returned a non true/false value when tested for the trait ",
 				dQuote("%s"), " :\n",
-				"actual value was %s\n")
+				"actual value was %s.\n")
 
 			readable <- list(
 				value = deparse_to_string(inputs$value),
@@ -79,7 +80,7 @@ say <- list(
 			text <- paste0(
 				"%s:\n", 
 				"the value %s didn't match any of the following compound traits:\n",
-				"%s\n")
+				"%s.\n")
 
 			and_collapse <- function (trait) {
 				paste0(trait, collapse = ' and ')
@@ -119,7 +120,7 @@ say <- list(
 				"%s:\n",
 				"an error was encountered while testing the value %s for the the trait ",
 				dQuote("%s"), " :\n",
-				"%s\n")
+				"%s.\n")
 
 			readable <- list(
 				value = deparse_to_string(inputs$value)
@@ -136,7 +137,7 @@ say <- list(
 				"%s:\n",
 				"a warning was encountered while testing the value %s for the the trait ",
 				dQuote("%s"), " :\n",
-				"%s\n")
+				"%s.\n")
 
 			readable <- list(
 				value = deparse_to_string(inputs$value)

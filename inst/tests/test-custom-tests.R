@@ -81,9 +81,7 @@ test_that("named works", {
 
 	f <- trait_tests$named
 	expect_true( f(list(a = 1, b = 2)) )
-	expect_false( f(list(a = 1, 2)) )
 	expect_true( f(c(a = 1, b = 2)) )
-	expect_false( f(c(a = 1, 2)) )
 	expect_false( f(10) )
 })
 

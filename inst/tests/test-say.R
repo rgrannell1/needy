@@ -27,7 +27,7 @@ test_that(
 
 		expect_error(say$missing_traits(pcall), pcall)
 
-		expect_error(say$missing_value(pcall), pcall)
+		expect_error(say$missing_value(pcall, name), pcall)
 
 		expect_error(
 			say$traits_not_character(pcall, traits),

@@ -10,9 +10,12 @@ trait_tests <- ( function () {
 	)
 	
 	# useful for testing purposes
-	test_for$any <- function (value) True
-	test_for$arbitrary <- function (value) True
-	test_for$'*' <- function (value) True
+	test_for$any <- 
+		function (value) True
+	test_for$arbitrary <- 
+		function (value) True
+	test_for$'*' <- 
+		function (value) True
 
 	# (mostly) builtin functions,
 	# tht mostly test the class of the object
@@ -120,13 +123,13 @@ trait_tests <- ( function () {
 		}
 	test_for$named <-
 		function (value) {
-			# does a listish value have names
-
-			( is.vector(value) || is.pairlist(value) ) &&
-			!is.expression(value) &&
-			(length(value) == 0 || (
-				!is.null(names(value)) &&
-				all(nchar(names(value)) > 0)))
+			!is.null( names(value) )		
+		}
+	test_for$keyed <- 
+		function (value) {
+			(is.vector(value) || is.pairlist(value)) &&
+			length(names(value)) > 0 &&
+			min( nchar(names(value)) ) > 0
 		}
 	test_for$boolean <-
 		function (value) {
