@@ -1,6 +1,13 @@
 needy
 ======
 
+## Note
+
+Needy is not being actively developed. It was designed for
+use in my larger programming libraries, but it is too inefficient for
+that purpose.
+
+
 needy is a small utility library designed to make testing function
 inputs less difficult. R is a dynamically typed language, but larger
 projects need input checking for scalabity. 
